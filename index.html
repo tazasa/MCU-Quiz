@@ -463,7 +463,7 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
     <div class="hero">
       <div class="eyebrow" style="animation: fadeUp .6s var(--ease) both">Unofficial fan quiz · series &amp; movies</div>
       <h1 class="title"><span class="ln"><span>MCU</span></span><span class="ln"><span class="outline">Quiz Hub</span></span></h1>
-      <p class="lead">Pick a series or a movie. Every quiz has four levels, a 10-minute clock (8 on Hard), an 80% pass mark and strict integrity rules.</p>
+      <p class="lead">Pick a series or a movie. Every quiz has four levels, an 8-minute clock, an 80% pass mark and strict integrity rules.</p>
       <div class="hubstats" id="hubStats"></div>
     </div>
     <div class="sect"><h2>Featured</h2><span class="eyebrow">Spotlight quiz</span></div>
@@ -482,7 +482,7 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
       <p class="lead" id="introLead"></p>
     </div>
     <div class="rules">
-      <div class="rule glass glow"><b id="ruleTime">10:00</b><span id="ruleTimeTxt">Total time. The quiz submits itself at zero.</span></div>
+      <div class="rule glass glow"><b id="ruleTime">8:00</b><span id="ruleTimeTxt">Total time. The quiz submits itself at zero.</span></div>
       <div class="rule glass glow"><b>80%</b><span id="rulePass">Pass mark. You need 24 of 30 right. Anything less is a fail.</span></div>
       <div class="rule glass glow"><b>Random</b><span id="ruleDraw">Every attempt draws 30 fresh questions from your level&#39;s pool, in a new order.</span></div>
       <div class="rule glass glow"><b>Monitored</b><span>A violation costs 30 seconds. Two violations end the quiz as a fail.</span><button type="button" class="infolink" id="rulesBtn" aria-haspopup="dialog">What counts as a violation? →</button></div>
@@ -512,7 +512,7 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
             <div class="tally" aria-label="Running tally"><span class="r">✓ <b id="tRight">0</b></span><span class="w">✗ <b id="tWrong">0</b></span></div>
           </div>
         </div>
-        <div class="clock" id="clock" role="timer" aria-live="off">10:00</div>
+        <div class="clock" id="clock" role="timer" aria-live="off">8:00</div>
       </div>
       <div class="bar"><div id="bar"></div></div>
     </div>
@@ -638,8 +638,8 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
 }
   var SALT = "zR2kAJjkGivp";
   var NQ = 30;
-  function limitFor(d) { return Math.round((d === 3 ? 8 : 10) * 60 * 1000 * NQ / 30); }
-  var LIMIT = 10 * 60 * 1000, PER_Q = 15 * 1000, MAX_STRIKES = 2, PASS = 24, PENALTY = 30 * 1000;
+  function limitFor(d) { return Math.round(8 * 60 * 1000 * NQ / 30); }
+  var LIMIT = 8 * 60 * 1000, PER_Q = 15 * 1000, MAX_STRIKES = 2, PASS = 24, PENALTY = 30 * 1000;
   var RING = 2 * Math.PI * 27;
   var REDUCE = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1084,7 +1084,7 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
     LEVEL = d; try { localStorage.setItem("fws-level", String(d)); } catch (e) {}
     Array.prototype.forEach.call(document.querySelectorAll(".lvl"), function (b) { b.setAttribute("aria-checked", String(+b.getAttribute("data-d") === d)); });
     if (sound) SFX.pick();
-    var rt = $("ruleTime"); if (rt) { rt.textContent = fmt(limitFor(d)); $("ruleTimeTxt").textContent = d === 3 ? "Hard gets a tighter clock. The quiz submits itself at zero." : "Total time. The quiz submits itself at zero."; }
+    var rt = $("ruleTime"); if (rt) { rt.textContent = fmt(limitFor(d)); $("ruleTimeTxt").textContent = "Total time. The quiz submits itself at zero."; }
   }
   setLevel(LEVEL, false);
   Array.prototype.forEach.call(document.querySelectorAll(".lvl"), function (b) { b.addEventListener("click", function () { setLevel(+b.getAttribute("data-d"), true); }); });
