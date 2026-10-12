@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
@@ -401,6 +400,51 @@ body[data-quiz="dp"] .glowfield { background: radial-gradient(60% 50% at 85% 0%,
 .feat .frow0 { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .feat .frow0 .stars { font-size: 16px; }
 #cardsFeatured { gap: 16px; }
+/* gauntlet banner */
+#gauntlet:empty { display: none; }
+.gaunt { --c: #ff5a4d; --c2: #ffd24a; position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); width: 100%; margin: 4px 0 28px; padding: 0; text-align: left; cursor: pointer; color: var(--ink); font: inherit; overflow: hidden; border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--c) 50%, var(--line));
+  background: radial-gradient(70% 130% at 100% 50%, color-mix(in srgb, var(--c) 26%, transparent), transparent 62%), radial-gradient(50% 90% at 0% 100%, color-mix(in srgb, var(--c2) 12%, transparent), transparent 70%), linear-gradient(120deg, #150a1c, #0a0f1f 55%, #17110a);
+  box-shadow: 0 40px 100px -50px var(--c); animation: fadeUp .7s var(--ease) .3s both; transition: transform .35s var(--ease), box-shadow .3s; }
+.gaunt::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ang, 0deg), var(--c), transparent 30%, var(--c2) 50%, transparent 80%, var(--c)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spinb 7s linear infinite; pointer-events: none; z-index: 2; }
+.gaunt::after { content: ""; position: absolute; top: 0; bottom: 0; left: -35%; width: 22%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .09), transparent); transform: skewX(-18deg); animation: gsweep 7s ease-in-out infinite; pointer-events: none; z-index: 1; }
+@keyframes gsweep { 0%, 55% { transform: translateX(0) skewX(-18deg); } 100% { transform: translateX(650%) skewX(-18deg); } }
+.gaunt:hover { transform: translateY(-4px); box-shadow: 0 50px 110px -44px var(--c); }
+.gaunt .gtx { position: relative; z-index: 3; min-width: 0; display: grid; gap: 14px; padding: 30px 30px 26px; align-content: center; }
+.gaunt .gk { justify-self: start; display: inline-flex; align-items: center; gap: 8px; font: 11px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--bg); background: linear-gradient(90deg, var(--c), var(--c2)); padding: 5px 11px; border-radius: 999px; }
+.gaunt h2 { margin: 0; font-family: var(--display); font-weight: 900; text-transform: uppercase; line-height: .84; font-size: clamp(40px, 5.2vw, 70px); letter-spacing: -.01em; }
+.gaunt h2 span { display: block; }
+.gaunt h2 .o { color: transparent; -webkit-text-stroke: 2px var(--c); background: linear-gradient(90deg, var(--c), var(--c2)); -webkit-background-clip: text; background-clip: text; -webkit-text-stroke: 0; color: transparent; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--c) 45%, transparent)); }
+.gaunt .gsub { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 46ch; }
+.gaunt .gsub b { color: var(--ink); font-weight: 600; }
+.gaunt .gph { display: flex; align-items: center; gap: 0; }
+.gaunt .gph i { font-style: normal; flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--mono); color: var(--bg); background: var(--c); border: 2px solid rgba(255, 255, 255, .85); }
+.gaunt .gph i:nth-child(4n+3) { background: var(--c2); }
+.gaunt .gph u { flex: 1 1 8px; max-width: 26px; height: 2px; background: linear-gradient(90deg, var(--c), var(--c2)); opacity: .7; }
+.gaunt .gfoot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 14px; }
+.gaunt .gfoot .best { color: var(--muted); font-size: 13px; }
+.gaunt .ggo { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--bg); background: linear-gradient(90deg, var(--c), var(--c2)); padding: 11px 18px; border-radius: 999px; box-shadow: 0 10px 30px -10px var(--c); }
+.gaunt .gart { position: relative; min-height: 270px; z-index: 0; }
+.gaunt .gart svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gaunt .gr1 { transform-origin: 200px 130px; animation: gspin 48s linear infinite; }
+.gaunt .gr2 { transform-origin: 200px 130px; animation: gspin 32s linear infinite reverse; }
+.gaunt .gcore { transform-origin: 200px 130px; animation: gpulse 3.2s ease-in-out infinite; }
+@keyframes gspin { to { transform: rotate(360deg); } }
+@keyframes gpulse { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.18); opacity: 1; } }
+@media (max-width: 760px) { .gaunt { grid-template-columns: 1fr; } .gaunt .gart { min-height: 190px; order: -1; } .gaunt .gtx { padding: 20px 18px 20px; } .gaunt h2 { font-size: clamp(40px, 13vw, 64px); } }
+.gaunt.locked .gart { filter: saturate(.35) brightness(.7); }
+.gaunt.locked .ggo { background: rgba(255, 255, 255, .1); color: var(--ink); box-shadow: none; border: 1px solid var(--line-hi); }
+.gaunt.locked .gfoot .best b { color: var(--ink); }
+.gaunt.shake { animation: gshake .45s ease; }
+@keyframes gshake { 0%, 100% { transform: none; } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+body.dlg { overflow: hidden; }
+body.dlg .gaunt::before, body.dlg .gaunt::after, body.dlg .gaunt .gr1, body.dlg .gaunt .gr2, body.dlg .gaunt .gcore, body.dlg .feat::before { animation-play-state: paused !important; }
+.bd:not(.on) { filter: none; }
+.bd:not(.on) .ic { --badge-accent: #9aa5bd !important; --badge-glow: rgba(154, 165, 189, .12) !important; }
+.vcard { -webkit-overflow-scrolling: touch; }
+@media (hover: none) { .bd:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gaunt::before, .gaunt::after, .gaunt .gr1, .gaunt .gr2, .gaunt .gcore { animation: none; } }
+
 .feat[data-id="doom"] { --c: #3fd16a; --c2: #9b7bff; }
 body[data-quiz="msm"] { --steel: #ff5e8a; --steel-deep: color-mix(in srgb, #ff5e8a 60%, #000); --gold: #ffd24a; }
 body[data-quiz="msm"] .glowfield { background: radial-gradient(60% 50% at 85% 0%, rgba(255,94,138, .28), transparent 70%), radial-gradient(50% 40% at 0% 100%, rgba(90,209,255, .15), transparent 70%); }
@@ -432,6 +476,9 @@ body[data-quiz="ff"] .glowfield { background: radial-gradient(60% 50% at 85% 0%,
 body[data-quiz="doom"] { --steel: #3fd16a; --steel-deep: color-mix(in srgb, #3fd16a 60%, #000); --gold: #ffd24a; }
 body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0%, rgba(63,209,106, .28), transparent 70%), radial-gradient(50% 40% at 0% 100%, rgba(155,123,255, .15), transparent 70%); }
 .qz[data-id="doom"] { --c: #3fd16a; --c2: #9b7bff; }
+.feat[data-id="mcu"], .qz[data-id="mcu"] { --c: #ff5a4d; --c2: #ffd24a; }
+body[data-quiz="mcu"] { --steel: #ff5a4d; --steel-deep: color-mix(in srgb, #ff5a4d 60%, #000); --gold: #ffd24a; }
+body[data-quiz="mcu"] .glowfield { background: radial-gradient(60% 50% at 85% 0%, rgba(255, 90, 77, .28), transparent 70%), radial-gradient(50% 40% at 0% 100%, rgba(255, 210, 74, .15), transparent 70%); }
 .qz:nth-child(15) { animation-delay: 1.12s; } .qz:nth-child(16) { animation-delay: 1.16s; } .qz:nth-child(17) { animation-delay: 1.20s; } .qz:nth-child(18) { animation-delay: 1.20s; } .qz:nth-child(19) { animation-delay: 1.20s; } .qz:nth-child(20) { animation-delay: 1.20s; } .qz:nth-child(21) { animation-delay: 1.20s; } 
 .qz:nth-child(8) { animation-delay: 0.84s; } .qz:nth-child(9) { animation-delay: 0.88s; } .qz:nth-child(10) { animation-delay: 0.92s; } .qz:nth-child(11) { animation-delay: 0.96s; } .qz:nth-child(12) { animation-delay: 1.00s; } .qz:nth-child(13) { animation-delay: 1.04s; } .qz:nth-child(14) { animation-delay: 1.08s; } 
 
@@ -580,7 +627,7 @@ body[data-quiz="doom"] .glowfield { background: radial-gradient(60% 50% at 85% 0
 .tl-card .best { font-size: 13px; color: var(--muted); }
 .tl-card .best b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
 .tl-item.done .tl-card { border-color: rgba(63,214,140,.4); }
-.tl-item[data-id="doom"], .tl-item[data-id="vision"] { --c: var(--gold); }
+.tl-item[data-id="doom"], .tl-item[data-id="vision"], .tl-item[data-id="mcu"] { --c: var(--gold); }
 @media (max-width: 760px) {
   .tl-era { grid-template-columns: 1fr; gap: 14px; }
   .tl-gut > div { position: static; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
@@ -818,6 +865,21 @@ input, textarea, select { font-size: 16px; }
 .meter { margin-bottom: 26px; margin-top: 26px; }
 .meter > em.m2 { text-align: right; transform: translateX(-100%); left: calc(90% + 4px); white-space: nowrap; }
 @media (max-width: 560px) { #rSkipBox { grid-column: 1 / -1; } .meter > em { font-size: 10px; } }
+/* tall dialogs scroll as the full-screen layer itself (iOS Safari drops tiles of a tall nested scroller) */
+#badgesDlg, #sourcesDlg { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 7, 15, .92); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; place-items: start center; align-content: start; }
+#badgesDlg .vcard, #sourcesDlg .vcard { max-height: none; overflow: visible; margin: 0 auto; }
+.bd .ic svg * { vector-effect: none; }
+.bd { isolation: auto; }
+.bd::before { transition: none; }
+.bgroups { display: grid; gap: 22px; }
+.bgroups section { display: grid; gap: 10px; }
+.bgh { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: baseline; padding: 0 2px; }
+.bgh h3 { margin: 0; font: 700 12px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+.bgh p { grid-column: 1; margin: 0; font-size: 12px; color: var(--muted); }
+.bgh i { grid-column: 2; grid-row: 1; font: normal 11px var(--mono); color: var(--muted); }
+.bd .dif { display: inline-block; margin: 5px 0 0 8px; padding: 1px 7px; border-radius: 999px; font: normal 9px var(--mono); letter-spacing: .12em; text-transform: uppercase; border: 1px solid currentColor; vertical-align: top; }
+.bd .dif.d1 { color: #59e0a0; } .bd .dif.d2 { color: #ffd166; } .bd .dif.d3 { color: #ff8f5a; } .bd .dif.d4 { color: #c4a1ff; }
+.bd.on small { display: none; } .bd.on .dif { margin-left: 0; }
 </style>
 </head>
 <body>
@@ -835,6 +897,7 @@ input, textarea, select { font-size: 16px; }
       <div class="hubstats" id="hubStats"></div>
       <div class="bestrun" id="bestRun" hidden></div>
     </div>
+    <div id="gauntlet"></div>
     <div class="sortbar" role="radiogroup" aria-label="Sort quizzes" id="sortbar">
       <span class="eyebrow">View</span>
       <button type="button" role="radio" aria-checked="true" data-mode="home">Browse</button>
@@ -995,7 +1058,7 @@ input, textarea, select { font-size: 16px; }
     <div class="badge-progress" role="progressbar" aria-label="Badges earned" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="badgeProgress">
       <span>Mission archive</span><b id="badgeProgressText">0 / 20</b><div class="badge-track" aria-hidden="true"><i id="badgeProgressFill"></i></div>
     </div>
-    <div class="bgrid" id="badgesGrid"></div>
+    <div class="bgroups" id="badgesGrid"></div>
     <div class="bsave">
       <p class="bmeta">Progress is saved automatically in this browser. To move it, copy your save code and paste it on the other device. Save codes can be reused by anyone who has a copy; this offline page cannot limit a code to one device. Importing merges progress and may increase displayed scores.</p>
       <textarea id="impBox" spellcheck="false" placeholder="Save code appears here, or paste one to restore"></textarea>
@@ -1068,9 +1131,9 @@ input, textarea, select { font-size: 16px; }
     return JSON.parse(new TextDecoder().decode(out));
   }
   // Answers are never stored. Each question keeps only a slow PBKDF2 verifier of its correct option; a pick is checked by deriving the same value.
-  function derive(id, qi, text) {
+  function derive(sk, text) {
     return crypto.subtle.importKey("raw", ENC.encode(text), "PBKDF2", false, ["deriveBits"]).then(function (k) {
-      return crypto.subtle.deriveBits({ name: "PBKDF2", salt: ENC.encode("mcu|" + id + "|" + qi), iterations: KDF_IT, hash: "SHA-256" }, k, 96);
+      return crypto.subtle.deriveBits({ name: "PBKDF2", salt: ENC.encode("mcu|" + sk), iterations: KDF_IT, hash: "SHA-256" }, k, 96);
     }).then(function (bits) { return btoa(String.fromCharCode.apply(null, new Uint8Array(bits))); });
   }
   var ALL = decode(), DB = ALL[0];
@@ -1095,6 +1158,29 @@ input, textarea, select { font-size: 16px; }
       if (out.length) d.src = out;
     });
   });
+  // The MCU Gauntlet: a 70-question special assembled from every film and series quiz, grouped by phase. Items share the original verifiers.
+  (function () {
+    var PH = { im: [1, 1, 2], solo: [1, 4, 4, 4], av: [1, 2], cap: [1, 2, 3, 5], thor: [1, 2, 3, 4], sm: [3, 3, 4], gotg: [2, 3, 5], bp: [3, 4], ds: [3, 4], am: [2, 3, 5], cm: [3, 5], dp: [0, 0, 5], iw: [3], eg: [3], tb: [5], ff: [6],
+      wv: 4, fws: 4, loki: 4, mk: 4, hawk: 4, msm: 4, shh: 4, si: 5, echo: 5, dd: 5, aaa: 5, ih: 5 };
+    var CTX = /\b(this|the|that) (episode|film|movie|season|series|show|finale|premiere|pilot|trilogy|act)\b|\b(episode|film|finale|premiere|movie|season)['\u2019]s\b|\bin the (opening|closing|first|second|third|final|last) (scene|act|episode|film|half)\b/i;
+    var data = [], seen = {};
+    ALL.forEach(function (q) {
+      var m = PH[q.id]; if (m === undefined) return;
+      q.data.forEach(function (d, i) {
+        if (d.dead || !d.v) return;
+        var ph = typeof m === "number" ? m : m[d.e - 1]; if (!ph) return;
+        var key = d.q.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        if (seen[key] || CTX.test(d.q)) return; seen[key] = 1;
+        var nd = { e: ph, c: d.c || 0, d: d.d, q: d.q, o: d.o, k: d.k || 0, v: d.v, vk: q.id + "|" + i };
+        if (d.src) nd.src = d.src;
+        data.push(nd);
+      });
+    });
+    ALL.push({ id: "mcu", kind: "special", films: 0, featured: true, pop: 5, count: 70, unit: "6 phases", pooled: true, noEpisodeLabels: true,
+      lead: "The whole MCU in one run. Answer 70 questions pulled from every film and series in the hub, spread across Phase One to Phase Six. One question at a time, no going back.",
+      covers: null, name: "The MCU Gauntlet", sub: "", year: "2008\u20132026", title: [["MCU", ""], ["Gauntlet", ""], ["Every Era.", "outline"]],
+      E: ["Phase One", "Phase Two", "Phase Three", "Phase Four", "Phase Five", "Phase Six"], L: null, fx: {}, data: data });
+  })();
   ALL.forEach(function (q) { if (q.id === "vision") { q.count = 50; if (q.lead) q.lead = q.lead.replace("30 questions", "50 questions"); } });
   var DP_NOTE = "Deadpool (2016) and Deadpool 2 (2018) are NOT MCU films. Only Deadpool & Wolverine (2024) is part of the MCU.";
   ALL.forEach(function (q) { if (q.id === "dp") q.sub = "NOT MCU: Deadpool (2016) & Deadpool 2 (2018). MCU: Deadpool & Wolverine (2024)."; });
@@ -1194,6 +1280,16 @@ input, textarea, select { font-size: 16px; }
     }
     if (!REDUCE && !once && skyOn) requestAnimationFrame(drawSky);
   }
+  (function () {
+    var ids = ["badgesDlg", "sourcesDlg", "rulesInfo"];
+    function sync() {
+      var open = ids.some(function (i) { var e = document.getElementById(i); return e && !e.hidden; });
+      document.body.classList.toggle("dlg", open);
+      if (open) skyOn = false; else if (!skyOn && !document.hidden) { skyOn = true; if (!REDUCE) { lastT = 0; requestAnimationFrame(drawSky); } }
+    }
+    var mo = new MutationObserver(sync);
+    ids.forEach(function (i) { var e = document.getElementById(i); if (e) mo.observe(e, { attributes: true, attributeFilter: ["hidden"] }); });
+  })();
   document.addEventListener("visibilitychange", function () { skyOn = !document.hidden; if (skyOn && !REDUCE) { lastT = 0; requestAnimationFrame(drawSky); } });
   sizeSky(); for (var ti = 0; ti < 14; ti++) trails.push(newTrail(true)); drawSky(performance.now(), true); if (!REDUCE) requestAnimationFrame(drawSky);
 
@@ -1248,6 +1344,7 @@ input, textarea, select { font-size: 16px; }
   // ---------- hub ----------
   function epLabel(e, short) { if (DB.kind === "movie" || DB.noEpisodeLabels) return ""; return DB.L ? DB.L[e - 1] : (short ? "Ep " : "Episode ") + e; }
   function withLabel(e, short) { var l = epLabel(e, short); return (l ? l + " · " : "") + DB.E[e - 1]; }
+  function liveN(q) { var n = 0; q.data.forEach(function (d) { if (!d.dead) n++; }); return n; }
   function unitText(qz) { return qz.unit ? qz.unit : qz.kind === "movie" ? (qz.films > 1 ? qz.films + " films" : "Film") : qz.E.length + " episodes"; }
   function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
   function tierOf(s, n, p) { n = n || 30; if (p === false) return "fail"; if (s >= n) return "perfect"; if (s >= Math.ceil(n * .9)) return "mastered"; if (s >= Math.ceil(n * .8)) return "pass"; return "fail"; }
@@ -1256,6 +1353,7 @@ input, textarea, select { font-size: 16px; }
   function bestChip(b) { var tr = bestTier(b); return '<span class="tchip t-' + tr + '">' + (tr === "fail" ? "Not passed" : TIER_NAME[tr]) + "</span>"; }
   function mastScore(q) { return Math.ceil((q.count || 30) * .9); }
   function masteredLevels(p, id) { var q = ALL.filter(function (x) { return x.id === id; })[0], need = q ? mastScore(q) : 27; return [1, 2, 3, 0].filter(function (l) { return p.pass[id + "|" + l] !== undefined && p.pass[id + "|" + l] >= need; }); }
+  function gauntletOpen(p) { return masteredIds(p || loadP()).length >= 3; }
   function masteredIds(p) { return ALL.filter(function (q) { return masteredLevels(p, q.id).length; }).map(function (q) { return q.id; }); }
   function medalSVG(tier) {
     var base = '<svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">', sh = '<path d="M48 8 82 20v26c0 20-14 34-34 42C28 80 14 66 14 46V20z" style="fill:currentColor;fill-opacity:.14"/>';
@@ -1291,8 +1389,9 @@ input, textarea, select { font-size: 16px; }
     ALL.forEach(function (q) { if (!QCOL[q.id]) { var s = document.createElement("div"); s.className = "qz"; s.setAttribute("data-id", q.id); s.style.display = "none"; document.body.appendChild(s); QCOL[q.id] = getComputedStyle(s).getPropertyValue("--c").trim() || "#7ca7ff"; document.body.removeChild(s); } });
     var catalog = $("sourceCatalog"); catalog.textContent = "";
     ALL.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).forEach(function (qz) {
+      if (qz.pooled) return;
       var details = document.createElement("details"); details.className = "source-entry";
-      var summary = document.createElement("summary"); var sn = document.createElement("span"); sn.textContent = qz.name; var sc = document.createElement("span"); sc.className = "cnt"; sc.textContent = qz.data.length + " in the question pool"; summary.appendChild(sn); summary.appendChild(sc); details.appendChild(summary);
+      var summary = document.createElement("summary"); var sn = document.createElement("span"); sn.textContent = qz.name; var sc = document.createElement("span"); sc.className = "cnt"; sc.textContent = liveN(qz) + " in the question pool"; summary.appendChild(sn); summary.appendChild(sc); details.appendChild(summary);
       details.style.setProperty("--qc", (QCOL[qz.id] || "#7ca7ff")); details.setAttribute("data-name", qz.name.toLowerCase());
       var body = document.createElement("div"); body.className = "source-entry-body";
       var primary = document.createElement("div"), heading = document.createElement("h3"); heading.textContent = "Primary source material"; primary.appendChild(heading);
@@ -1355,7 +1454,7 @@ input, textarea, select { font-size: 16px; }
     clean: ["#fff08a", "rgba(255,240,138,.2)"], clean10: ["#e9c2ff", "rgba(233,194,255,.2)"],
     fast: ["#ffe36e", "rgba(255,227,110,.2)"], plays10: ["#ff82b2", "rgba(255,130,178,.2)"],
     master1: ["#e4c06d", "rgba(228,192,109,.22)"], masterhard: ["#ff9f43", "rgba(255,159,67,.22)"], master10: ["#7fe8ff", "rgba(127,232,255,.2)"],
-    plays50: ["#ffca73", "rgba(255,202,115,.2)"], all: ["#f5e6a8", "rgba(245,230,168,.2)"]
+    master3: ["#ffca73", "rgba(255,202,115,.2)"], all: ["#f5e6a8", "rgba(245,230,168,.2)"]
   };
   var BADGE_ART = {
     master1: '<path d="M24 4 40 10v12c0 10-6.8 17-16 22C14.8 39 8 32 8 22V10z"/><path d="m24 14 3.2 6.6 7.3 1-5.3 5.2 1.3 7.2L24 30.4l-6.5 3.6 1.3-7.2-5.3-5.2 7.3-1z"/>',
@@ -1379,10 +1478,10 @@ input, textarea, select { font-size: 16px; }
     clean10: '<circle cx="24" cy="20" r="12"/><path d="m19 31-3 12 8-5 8 5-3-12"/><path d="m24 11 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
     fast: '<path d="m27 3-17 24h12l-2 18 18-26H26z"/><path d="M5 11h8M3 19h7M36 7h7"/>',
     plays10: '<path d="M24 41S7 31 7 18a9 9 0 0 1 17-4 9 9 0 0 1 17 4c0 13-17 23-17 23z"/><path d="m18 24 4 4 9-10"/>',
-    plays50: '<path d="M16 5h16v9c0 9-3 14-8 17-5-3-8-8-8-17z"/><path d="M16 10H8v5c0 6 4 9 11 10m13-15h8v5c0 6-4 9-11 10M24 31v8m-8 5h16m-13-5h10"/>',
+    master3: '<path d="M16 5h16v9c0 9-3 14-8 17-5-3-8-8-8-17z"/><path d="M16 10H8v5c0 6 4 9 11 10m13-15h8v5c0 6-4 9-11 10M24 31v8m-8 5h16m-13-5h10"/>',
     all: '<path d="m5 15 10 4 9-13 9 13 10-4-5 24H10z"/><path d="M15 29h18M17 36h14"/><circle cx="24" cy="15" r="3" fill="currentColor"/>'
   };
-  var BADGE_OFF = {"masterhard": [0, -1], "master10": [0, -1], "perf": [0, 0.8], "hard5": [0, -1], "movall": [0, -1.81], "doomhard": [0, -2], "clean": [0, 1.25], "clean10": [0, -1.5], "fast": [1, 0], "plays10": [0, -1.06], "plays50": [0, -0.5], "all": [0, 1.5]};
+  var BADGE_OFF = {"masterhard": [0, -1], "master10": [0, -1], "perf": [0, 0.8], "hard5": [0, -1], "movall": [0, -1.81], "doomhard": [0, -2], "clean": [0, 1.25], "clean10": [0, -1.5], "fast": [1, 0], "plays10": [0, -1.06], "master3": [0, -0.5], "all": [0, 1.5]};
   function badgeSvg(id) {
     var of = BADGE_OFF[id] || [0, 0], art = BADGE_ART[id] || BADGE_ART.first;
     return '<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + '<g transform="translate(' + of[0] + ' ' + of[1] + ')">' + art + "</g></svg>";
@@ -1410,7 +1509,7 @@ input, textarea, select { font-size: 16px; }
     { id: "masterhard", ic: "♛", n: "Hard Mastery", d: "Score 90%+ on a quiz on Hard.", t: function (p) { return ALL.some(function (q) { return masteredLevels(p, q.id).indexOf(3) !== -1; }); } },
     { id: "fast", ic: "↑", n: "Speed Runner", d: "Pass with at least half the clock left.", t: function (p) { return p.fast >= 1; } },
     { id: "master10", ic: "♚", n: "Grandmaster", d: "Master 10 different quizzes.", t: function (p) { return masteredIds(p).length >= 10; } },
-    { id: "plays50", ic: "❦", n: "Veteran", d: "Finish 50 quizzes.", t: function (p) { return p.plays >= 50; } },
+    { id: "master3", ic: "❦", n: "Triple Mastery", d: "Master 3 different quizzes (90%+). Unlocks the MCU Gauntlet.", t: function (p) { return masteredIds(p).length >= 3; } },
     { id: "all", ic: "♔", n: "Completionist", d: "Pass every quiz in the hub.", t: function (p) { return passedIds(p).length === ALL.length; } }
   ];
   function recordRun(id, level, score, n, pass, strikes, used, limit) {
@@ -1427,14 +1526,38 @@ input, textarea, select { font-size: 16px; }
     saveP(p);
     return fresh;
   }
+  var BADGE_GROUPS = [
+    { n: "Getting started", d: "Your first steps in the hub.", ids: ["first", "pass", "clean", "fast"] },
+    { n: "Collections", d: "Clear whole sets of quizzes.", ids: ["ser3", "mov3", "doom", "serall", "movall"] },
+    { n: "Scores & mastery", d: "Chase the top marks.", ids: ["perf", "master1", "master3", "master10"] },
+    { n: "Hard mode", d: "For people who like it difficult.", ids: ["hard", "four", "doomhard", "hard5", "masterhard", "hardperf"] },
+    { n: "Ultimate", d: "The final goal.", ids: ["all"] }
+  ];
+  var BADGE_DIF = { first: 1, pass: 1, clean: 2, fast: 2, ser3: 1, mov3: 1, doom: 2, serall: 3, movall: 3, perf: 2, master1: 2, master3: 3, master10: 4, hard: 2, four: 2, hard5: 3, hardperf: 4, masterhard: 3, doomhard: 3, all: 4 };
+  var DIF_NAME = { 1: "Easy", 2: "Medium", 3: "Hard", 4: "Elite" };
   function renderBadges() {
     var p = loadP(), g = $("badgesGrid"), got = 0; g.textContent = "";
-    BADGES.forEach(function (b) {
-      var on = !!p.badges[b.id] || b.t(p); if (on) got++;
-      var d = document.createElement("div"); d.className = "bd" + (on ? " on" : "");
-      d.innerHTML = '<span class="ic" style="' + badgeStyle(b.id) + '" aria-hidden="true">' + badgeSvg(b.id) + "</span><div><b>" + b.n + "</b><span>" + b.d + "</span><small>" + (on ? "UNLOCKED" : "LOCKED") + "</small></div>";
-      g.appendChild(d);
+    var byId = {}; BADGES.forEach(function (b) { byId[b.id] = b; });
+    var seen = {};
+    function section(gr, list) {
+      var sec = document.createElement("section"), n = 0, grid = document.createElement("div");
+      grid.className = "bgrid";
+      list.forEach(function (b) {
+        var on = !!p.badges[b.id] || b.t(p); if (on) { got++; n++; }
+        var df = BADGE_DIF[b.id] || 2, d = document.createElement("div"); d.className = "bd" + (on ? " on" : "");
+        d.innerHTML = '<span class="ic" style="' + badgeStyle(b.id) + '" aria-hidden="true">' + badgeSvg(b.id) + '</span><div><b>' + b.n + '</b><span>' + b.d + '</span><small>' + (on ? "UNLOCKED" : "LOCKED") + '</small><em class="dif d' + df + '">' + DIF_NAME[df] + "</em></div>";
+        grid.appendChild(d);
+      });
+      var h = document.createElement("div"); h.className = "bgh";
+      h.innerHTML = "<h3></h3><p></p><i>" + n + " / " + list.length + "</i>"; h.querySelector("h3").textContent = gr.n; h.querySelector("p").textContent = gr.d;
+      sec.appendChild(h); sec.appendChild(grid); g.appendChild(sec);
+    }
+    BADGE_GROUPS.forEach(function (gr) {
+      var list = gr.ids.map(function (id) { seen[id] = 1; return byId[id]; }).filter(Boolean);
+      if (list.length) section(gr, list);
     });
+    var rest = BADGES.filter(function (b) { return !seen[b.id]; });
+    if (rest.length) section({ n: "More", d: "" }, rest);
     $("badgesMeta").textContent = got + " of " + BADGES.length + " earned · " + p.plays + " quiz" + (p.plays === 1 ? "" : "zes").replace("zes", "zes") + " finished";
     var pct = Math.round(got / BADGES.length * 100), progress = $("badgeProgress");
     progress.setAttribute("aria-valuemax", BADGES.length);
@@ -1472,7 +1595,7 @@ input, textarea, select { font-size: 16px; }
       var split = key.lastIndexOf("|"), quiz = split > 0 && quizForId(key.slice(0, split));
       return quiz && levels.indexOf(key.slice(split + 1)) !== -1 && p.perf[key] === 1;
     })) return false;
-    var badgeIds = BADGES.map(function (badge) { return badge.id; }).concat(["mixed", "clean10", "plays10"]);
+    var badgeIds = BADGES.map(function (badge) { return badge.id; }).concat(["mixed", "clean10", "plays10", "plays50"]);
     if (!Object.keys(p.badges).every(function (key) {
       return badgeIds.indexOf(key) !== -1 && safeTimestamp(p.badges[key]);
     })) return false;
@@ -1831,6 +1954,14 @@ input, textarea, select { font-size: 16px; }
       for (i = 0; i < 3; i++) s += el("ellipse", { cx: 280, cy: 70, rx: 54, ry: 16, style: strC2, "stroke-width": 2, transform: "rotate(" + (i * 60) + " 280 70)", opacity: .85 });
       s += el("circle", { cx: 280, cy: 70, r: 9, fill: "#fff" }) + skyline(195, "#0a1430", 45);
       s += '<g transform="translate(90 120) rotate(20)">' + P("M0 -40 Q12 -20 10 20 L-10 20 Q-12 -20 0 -40 Z", "fill:#e9edf8", 1) + P("M-10 10 L-20 26 L-10 20 Z M10 10 L20 26 L10 20 Z", "fill:" + C, 1) + P("M-6 22 L0 44 L6 22 Z", "fill:#ffd24a", .9) + "</g>";
+    } else if (id === "mcu") { // six phase nodes on a ring around a bright core
+      s += glow(200, 120, 170, 1, .55) + stars(60);
+      var nx = [], ny = [];
+      for (i = 0; i < 6; i++) { a = i / 6 * 6.2832 - 1.5708; nx.push(200 + Math.cos(a) * 84); ny.push(120 + Math.sin(a) * 84); }
+      s += el("circle", { cx: 200, cy: 120, r: 84 , style: "fill:none;stroke:" + C + ";stroke-width:1.2;opacity:.45" });
+      for (i = 0; i < 6; i++) { var j2 = (i + 1) % 6; s += P("M" + nx[i].toFixed(1) + " " + ny[i].toFixed(1) + " L200 120", "stroke:" + C2, .3, 1) + P("M" + nx[i].toFixed(1) + " " + ny[i].toFixed(1) + " L" + nx[j2].toFixed(1) + " " + ny[j2].toFixed(1), "stroke:" + C, .8, 2); }
+      for (i = 0; i < 6; i++) s += el("circle", { cx: nx[i].toFixed(1), cy: ny[i].toFixed(1), r: 7 , style: "fill:" + (i % 2 ? C2 : C) + ";stroke:#fff;stroke-width:1.5" });
+      s += el("circle", { cx: 200, cy: 120, r: 28 , style: "fill:none;stroke:" + C2 + ";stroke-width:2;opacity:.8" }) + el("circle", { cx: 200, cy: 120, r: 14 , style: "fill:#fff;opacity:.95" });
     } else if (id === "doom") { // shattered multiverse panes, green glow
       s += glow(200, 120, 170, 1, .6) + stars(40);
       for (i = 0; i < 14; i++) { a = r() * Math.PI * 2; var l2 = 60 + r() * 200; s += P("M200 120 L" + (200 + Math.cos(a) * l2).toFixed(0) + " " + (120 + Math.sin(a) * l2).toFixed(0), "stroke:" + (i % 3 ? C : C2), .7, 1 + r() * 1.5); }
@@ -1853,30 +1984,52 @@ input, textarea, select { font-size: 16px; }
     return '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' + defs + s + "</svg>";
   }
   function renderHub() {
+    var gaunt = null;
     var boxS = $("cardsSeries"), boxM = $("cardsMovies"), boxF = $("cardsFeatured"); boxS.textContent = ""; boxM.textContent = ""; boxF.textContent = "";
     var totalQ = 0, nS = 0, nM = 0, PRG = loadP();
     function starsHTML(n) { var s = ""; for (var i = 1; i <= 5; i++) s += i <= n ? "\u2605" : '<i>\u2605</i>'; return '<span class="stars" title="Fan rating: ' + n + ' of 5" aria-label="Fan rating ' + n + ' of 5">' + s + "</span>"; }
     ALL.slice().sort(function (a, b) { return (b.pop || 0) - (a.pop || 0); }).forEach(function (qz) {
-      totalQ += qz.data.length;
+      if (!qz.pooled) totalQ += liveN(qz);
       var b = best(qz.id), el = document.createElement("button");
       var bestTxt = b ? bestChip(b) + "<b>" + b.s + "/" + (b.n || 30) + "</b> on " + esc(b.l) : "Not attempted yet";
       var cl = passedLevels(PRG, qz.id); if (cl.length) bestTxt += '<small class="clr">Cleared: ' + cl.map(function (l) { return LEVELS[l]; }).join(" · ") + "</small>";
+      if (qz.id === "mcu") { gaunt = { qz: qz, bestTxt: bestTxt }; return; }
       if (qz.featured) {
         var topics = (qz.id === "doom" || qz.id === "vision") && qz.covers && qz.covers.length ? qz.covers : qz.E;
         var coversText = qz.id === "doom" || qz.id === "vision" ? "" : (qz.covers && qz.covers.length ? '<p class="covers"><b>Covers:</b> ' + qz.covers.map(esc).join(" · ") + "</p>" : "");
         el.type = "button"; el.className = "feat"; el.setAttribute("data-id", qz.id);
-        el.innerHTML = '<div class="ftxt"><span class="frow0"><span class="badge">Featured · ' + qz.year + "</span>" + starsHTML(qz.pop) + "</span><h3>" + esc(qz.name) + '</h3><span class="meta">' + unitText(qz) + " · " + qz.data.length + ' in the question pool · 4 levels</span><div class="chips">' +
+        el.innerHTML = '<div class="ftxt"><span class="frow0"><span class="badge">Featured · ' + qz.year + "</span>" + starsHTML(qz.pop) + "</span><h3>" + esc(qz.name) + '</h3><span class="meta">' + unitText(qz) + " · " + liveN(qz) + ' in the question pool · 4 levels</span><div class="chips">' +
           topics.map(function (e) { return "<span>" + esc(e) + "</span>"; }).join("") + "</div>" + coversText + '<div class="frow"><span class="best">' + bestTxt + '</span><span class="fgo">Start quiz →</span></div></div><div class="fart">' + coverSVG(qz) + "</div>";
         el.addEventListener("click", function () { SFX.pick(); openQuiz(qz.id); });
         boxF.appendChild(el); return;
       }
       var movie = qz.kind !== "series", box = movie ? boxM : boxS; if (movie) nM++; else nS++;
       el.type = "button"; el.className = "qz glass" + (b && /mastered|perfect/.test(bestTier(b)) ? " tier-" + bestTier(b) : ""); el.setAttribute("data-id", qz.id);
-      el.innerHTML = '<span class="art" aria-hidden="true"></span><div class="cover">' + coverSVG(qz) + '<span class="tag">' + (movie ? "Movie" : "Series") + " · " + qz.year + "</span>" + starsHTML(qz.pop) + "<h3>" + esc(qz.name) + '</h3><div class="pcred"><span><b>' + unitText(qz) + '</b></span></div></div><div style="display:grid;gap:10px"><span class="meta">' + unitText(qz) + " · " + qz.data.length + " in the question pool</span>" + (qz.sub ? '<span class="meta">' + esc(qz.sub) + "</span>" : "") + "</div>" +
+      el.innerHTML = '<span class="art" aria-hidden="true"></span><div class="cover">' + coverSVG(qz) + '<span class="tag">' + (movie ? "Movie" : "Series") + " · " + qz.year + "</span>" + starsHTML(qz.pop) + "<h3>" + esc(qz.name) + '</h3><div class="pcred"><span><b>' + unitText(qz) + '</b></span></div></div><div style="display:grid;gap:10px"><span class="meta">' + unitText(qz) + " · " + liveN(qz) + " in the question pool</span>" + (qz.sub ? '<span class="meta">' + esc(qz.sub) + "</span>" : "") + "</div>" +
         '<div class="foot"><span class="best">' + bestTxt + '</span><span class="go" aria-hidden="true">→</span></div>';
       el.addEventListener("click", function () { SFX.pick(); openQuiz(qz.id); });
       box.appendChild(el);
     });
+    var gb = $("gauntlet"); gb.textContent = "";
+    if (gaunt) {
+      var gq = gaunt.qz, nodes = "", rim = "", ang, k2;
+      for (k2 = 0; k2 < 6; k2++) { ang = k2 / 6 * 6.2832 - 1.5708; nodes += '<circle cx="' + (200 + Math.cos(ang) * 100).toFixed(1) + '" cy="' + (130 + Math.sin(ang) * 100).toFixed(1) + '" r="8" style="fill:' + (k2 % 2 ? "var(--c2)" : "var(--c)") + ';stroke:#fff;stroke-width:1.6"/>'; rim += (k2 ? "L" : "M") + (200 + Math.cos(ang) * 100).toFixed(1) + " " + (130 + Math.sin(ang) * 100).toFixed(1); }
+      var sat = ""; for (k2 = 0; k2 < 3; k2++) { ang = k2 / 3 * 6.2832; sat += '<circle cx="' + (200 + Math.cos(ang) * 66).toFixed(1) + '" cy="' + (130 + Math.sin(ang) * 66).toFixed(1) + '" r="4" style="fill:#fff"/>'; }
+      var dots = ""; for (k2 = 0; k2 < 26; k2++) dots += '<circle cx="' + ((k2 * 137.5) % 400).toFixed(0) + '" cy="' + ((k2 * 71.3) % 260).toFixed(0) + '" r="' + (0.5 + (k2 % 3) * 0.4).toFixed(1) + '" fill="#fff" opacity="' + (0.25 + (k2 % 4) * 0.12).toFixed(2) + '"/>';
+      var art = '<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><radialGradient id="gxg"><stop offset="0" style="stop-color:var(--c);stop-opacity:.9"/><stop offset="1" style="stop-color:var(--c);stop-opacity:0"/></radialGradient><radialGradient id="gxh"><stop offset="0" style="stop-color:var(--c2);stop-opacity:.7"/><stop offset="1" style="stop-color:var(--c2);stop-opacity:0"/></radialGradient></defs>' +
+        dots + '<circle cx="200" cy="130" r="150" fill="url(#gxg)" opacity=".5"/><circle cx="200" cy="130" r="90" fill="url(#gxh)" opacity=".45"/>' +
+        '<g class="gr1"><circle cx="200" cy="130" r="100" style="fill:none;stroke:var(--c);stroke-width:1.2;opacity:.5"/><path d="' + rim + 'Z" style="fill:none;stroke:var(--c);stroke-width:2;opacity:.8"/>' + nodes + '</g>' +
+        '<g class="gr2"><circle cx="200" cy="130" r="66" style="fill:none;stroke:var(--c2);stroke-width:1.4;stroke-dasharray:3 7;opacity:.85"/>' + sat + '</g>' +
+        '<g class="gcore"><circle cx="200" cy="130" r="30" style="fill:none;stroke:var(--c2);stroke-width:2;opacity:.9"/><circle cx="200" cy="130" r="15" style="fill:#fff"/></g></svg>';
+      var ph = ""; for (k2 = 1; k2 <= 6; k2++) ph += (k2 > 1 ? "<u></u>" : "") + "<i>" + k2 + "</i>";
+      var gOpen = gauntletOpen(PRG), gHave = Math.min(3, masteredIds(PRG).length);
+      var gbtn = document.createElement("button"); gbtn.type = "button"; gbtn.className = "gaunt" + (gOpen ? "" : " locked"); gbtn.setAttribute("data-id", "mcu"); gbtn.setAttribute("aria-label", gOpen ? "The MCU Gauntlet. 70 questions across all six phases. Start quiz." : "The MCU Gauntlet. Locked: master 3 quizzes to unlock. " + gHave + " of 3 so far.");
+      gbtn.innerHTML = '<div class="gtx"><span class="gk">' + (gOpen ? "New \u00b7 The ultimate run" : "Locked \u00b7 Master 3 quizzes") + '</span><h2><span>The MCU</span><span class="o">Gauntlet</span></h2>' +
+        '<p class="gsub"><b>70 questions</b> across every film and series, from Phase One to Phase Six. <b>' + liveN(gq).toLocaleString("en-US") + '</b> in the question pool.</p><div class="gph" aria-hidden="true">' + ph + '</div>' +
+        '<div class="gfoot"><span class="best">' + (gOpen ? gaunt.bestTxt : "Score 90%+ on 3 different quizzes to earn <b>Triple Mastery</b> and unlock this. <b>" + gHave + " / 3</b> so far.") + '</span><span class="ggo">' + (gOpen ? "Enter the Gauntlet \u2192" : "\ud83d\udd12 Locked") + '</span></div></div><div class="gart">' + art + "</div>";
+      gbtn.addEventListener("click", function () { SFX.pick(); openQuiz("mcu"); });
+      gb.appendChild(gbtn);
+    }
     var soon = document.createElement("div"); soon.className = "qz glass soon";
     soon.innerHTML = '<div style="display:grid;gap:8px"><span class="meta">Coming later</span><span style="color:var(--muted)">More series and movies can be added to the hub.</span></div>';
     boxM.appendChild(soon);
@@ -1960,7 +2113,8 @@ input, textarea, select { font-size: 16px; }
     dd:   { y: 2025.7, w: "c. 2025 \u2192 2026" },
     aaa:  { y: 2025.8, w: "c. 2025 \u2192 2026" },
     doom: { y: 2100.0, w: "Dec 2026", note: "Coming up" },
-    vision: { y: 2100.1, w: "Next", note: "Coming up" }
+    vision: { y: 2100.1, w: "Next", note: "Coming up" },
+    mcu: { y: 2100.2, w: "2008 \u2192 2026", note: "Every film and show" }
   };
   var ERAS = [
     { to: 1999, a: "1940s", b: "\u201390s", t: "Before the Avengers", d: "The roots of the universe." },
@@ -1981,7 +2135,7 @@ input, textarea, select { font-size: 16px; }
   function smallCard(qz, PRG) {
     var movie = qz.kind !== "series", el = document.createElement("button");
     el.type = "button"; el.className = "qz glass"; el.setAttribute("data-id", qz.id);
-    el.innerHTML = '<span class="art" aria-hidden="true"></span><div class="cover">' + coverSVG(qz) + '<span class="tag">' + (qz.kind === "special" ? "Special" : movie ? "Movie" : "Series") + " \u00b7 " + esc(qz.year) + "</span>" + starsHTML2(qz.pop) + "<h3>" + esc(qz.name) + '</h3><div class="pcred"><span><b>' + unitText(qz) + '</b></span></div></div><div style="display:grid;gap:10px"><span class="meta">' + unitText(qz) + " \u00b7 " + qz.data.length + " in the question pool</span>" + (qz.sub ? '<span class="meta">' + esc(qz.sub) + "</span>" : "") + "</div>" +
+    el.innerHTML = '<span class="art" aria-hidden="true"></span><div class="cover">' + coverSVG(qz) + '<span class="tag">' + (qz.kind === "special" ? "Special" : movie ? "Movie" : "Series") + " \u00b7 " + esc(qz.year) + "</span>" + starsHTML2(qz.pop) + "<h3>" + esc(qz.name) + '</h3><div class="pcred"><span><b>' + unitText(qz) + '</b></span></div></div><div style="display:grid;gap:10px"><span class="meta">' + unitText(qz) + " \u00b7 " + liveN(qz) + " in the question pool</span>" + (qz.sub ? '<span class="meta">' + esc(qz.sub) + "</span>" : "") + "</div>" +
       '<div class="foot"><span class="best">' + bestLine(qz, PRG) + '</span><span class="go" aria-hidden="true">\u2192</span></div>';
     el.addEventListener("click", function () { SFX.pick(); openQuiz(qz.id); });
     return el;
@@ -2020,7 +2174,7 @@ input, textarea, select { font-size: 16px; }
         var t = TL[q.id], li = document.createElement("li"), cl = passedLevels(PRG, q.id).length;
         li.className = "tl-item" + (cl ? " done" : ""); li.setAttribute("data-id", q.id);
         li.innerHTML = '<div class="tl-when"><span>' + t.w + "</span>" + (t.alt ? '<span class="alt">' + esc(t.alt) + "</span>" : "") + "</div>" +
-          '<button type="button" class="tl-card glass" data-id="' + q.id + '"><div class="th">' + coverSVG(q) + '</div><div class="tx"><span class="meta">' + (q.kind === "special" ? "Special" : q.kind === "series" ? "Series" : "Movie") + " \u00b7 " + unitText(q) + " \u00b7 " + q.data.length + " in the question pool</span><h4>" + esc(q.name) + "</h4>" + starsHTML2(q.pop) + (t.note ? '<span class="meta">' + esc(t.note) + "</span>" : "") + '<span class="best">' + bestLine(q, PRG) + "</span></div></button>";
+          '<button type="button" class="tl-card glass" data-id="' + q.id + '"><div class="th">' + coverSVG(q) + '</div><div class="tx"><span class="meta">' + (q.kind === "special" ? "Special" : q.kind === "series" ? "Series" : "Movie") + " \u00b7 " + unitText(q) + " \u00b7 " + liveN(q) + " in the question pool</span><h4>" + esc(q.name) + "</h4>" + starsHTML2(q.pop) + (t.note ? '<span class="meta">' + esc(t.note) + "</span>" : "") + '<span class="best">' + bestLine(q, PRG) + "</span></div></button>";
         li.querySelector("button").addEventListener("click", function () { SFX.pick(); openQuiz(q.id); });
         ol.appendChild(li);
       });
@@ -2071,13 +2225,14 @@ input, textarea, select { font-size: 16px; }
   }
   var CNT = {};
   function openQuiz(id, fromRoute) {
+    if (id === "mcu" && !gauntletOpen()) { if (fromRoute === true) { goHub(true, "home"); setHash("home"); } var gl = document.querySelector(".gaunt"); if (gl) { gl.classList.remove("shake"); void gl.offsetWidth; gl.classList.add("shake"); } return; }
     ALL.forEach(function (q) { if (q.id === id) DB = q; });
     FILM = 0;
     if (fromRoute !== true) setHash(slugOf(DB));
     document.body.setAttribute("data-quiz", DB.id);
-    CNT = { 0: DB.data.length, 1: 0, 2: 0, 3: 0 };
-    DB.data.forEach(function (q) { CNT[q.d]++; });
-    $("introMeta").textContent = (DB.kind === "special" ? "Special · " : DB.kind === "movie" ? "Fan quiz · " : "Disney+ · ") + DB.year + " · " + unitText(DB) + " · " + DB.data.length + " in the question pool · 4 levels";
+    CNT = { 0: liveN(DB), 1: 0, 2: 0, 3: 0 };
+    DB.data.forEach(function (q) { if (!q.dead) CNT[q.d]++; });
+    $("introMeta").textContent = (DB.kind === "special" ? "Special · " : DB.kind === "movie" ? "Fan quiz · " : "Disney+ · ") + DB.year + " · " + unitText(DB) + " · " + liveN(DB) + " in the question pool · 4 levels";
     $("introTitle").innerHTML = DB.title.map(function (l) { return '<span class="ln"><span' + (l[1] ? ' class="' + l[1] + '"' : "") + ">" + l[0] + "</span></span>"; }).join("");
     NQ = DB.count || 30; PASS = Math.ceil(NQ * 0.8);
     $("rulePass").textContent = "Pass mark. You need " + PASS + " of " + NQ + " right. Anything less is a fail.";
@@ -2236,7 +2391,7 @@ input, textarea, select { font-size: 16px; }
   function verify(pos, qi, text) {
     var s0 = S; if (!s0.vc) s0.vc = {}; var key = pos + "|" + text;
     var db0 = DB, want = db0.data[qi].v;
-    if (!s0.vc[key]) s0.vc[key] = derive(db0.id, qi, text).then(function (h) { return h === want; });
+    if (!s0.vc[key]) s0.vc[key] = derive(db0.data[qi].vk || (db0.id + "|" + qi), text).then(function (h) { return h === want; });
     return s0.vc[key];
   }
   function lock(forced) {
@@ -2340,7 +2495,7 @@ input, textarea, select { font-size: 16px; }
     if (!REV || REV.done) return; REV.done = true; var db = REV.db;
     REV.items.forEach(function (it) {
       var d = db.data[it.qi];
-      Promise.all(d.o.map(function (o) { return o === it.picked ? Promise.resolve(false) : derive(db.id, it.qi, o).then(function (h) { return h === d.v; }); })).then(function (r) {
+      Promise.all(d.o.map(function (o) { return o === it.picked ? Promise.resolve(false) : derive(d.vk || (db.id + "|" + it.qi), o).then(function (h) { return h === d.v; }); })).then(function (r) {
         var j = r.indexOf(true); if (it.el) it.el.textContent = "Correct answer: " + (j >= 0 ? d.o[j] : "unavailable");
       });
     });
@@ -2629,5 +2784,3 @@ input, textarea, select { font-size: 16px; }
 
 </body>
 </html>
-
-</body></html>
