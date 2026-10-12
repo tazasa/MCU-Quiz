@@ -2413,8 +2413,8 @@ input, textarea, select { font-size: 16px; }
     if (!S || S.done) return;
     var left = S.deadline - Date.now();
     $("clock").textContent = fmt(left);
-    $("clock").classList.toggle("low", left <= 90000);
-    document.body.classList.toggle("hurry", left <= 90000);
+    $("clock").classList.toggle("low", left <= 30000);
+    document.body.classList.toggle("hurry", left <= 30000);
     if (left <= 0) { finish("time"); return; }
     var secs = Math.ceil(left / 1000);
     if (secs <= 10 && secs !== S.lastTick) { S.lastTick = secs; SFX.tick(); }
