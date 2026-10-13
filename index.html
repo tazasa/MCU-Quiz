@@ -899,7 +899,10 @@ input, textarea, select { font-size: 16px; }
 .bd .dif.d1 { color: #59e0a0; } .bd .dif.d2 { color: #ffd166; } .bd .dif.d3 { color: #ff8f5a; } .bd .dif.d4 { color: #c4a1ff; }
 .bd.on small { display: none; } .bd.on .dif { margin-left: 0; }
 /* ---- versus challenges ---- */
-#chDlg, #badgesDlg, #sourcesDlg { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 7, 15, .92); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; place-items: start center; align-content: start; }
+#shareDlg, #chDlg, #badgesDlg, #sourcesDlg { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 7, 15, .92); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; place-items: start center; align-content: start; }
+#shareDlg .vcard { max-height: none; overflow: visible; margin: 0 auto; max-width: 480px; text-align: left; display: grid; gap: 14px; }
+.shareimg { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line-hi); background: #0a0f1e; display: block; }
+#shareDlg .row { display: flex; flex-wrap: wrap; gap: 10px; }
 #chDlg .vcard { max-height: none; overflow: visible; margin: 0 auto; max-width: 560px; text-align: left; display: grid; gap: 14px; }
 .chplan { margin: 0; font-family: var(--display); font-weight: 800; font-size: 20px; line-height: 1.15; text-transform: uppercase; letter-spacing: .02em; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1150,7 +1153,7 @@ select.chin { appearance: auto; }
         <button class="btn ghost" id="missedToggle" type="button" aria-expanded="false" aria-controls="missedList">Review missed questions</button>
         <div class="missed-list" id="missedList" hidden></div>
       </div>
-      <div class="row"><button class="btn ghost" id="retakeBtn" type="button">Retake <span class="arr" aria-hidden="true">↻</span></button><button class="btn ghost" type="button" data-hub="1">All quizzes</button><span class="fine" id="rAttempt"></span></div>
+      <div class="row"><button class="btn" id="shareBtn" type="button">Share card <span class="arr" aria-hidden="true">↗</span></button><button class="btn ghost" id="retakeBtn" type="button">Retake <span class="arr" aria-hidden="true">↻</span></button><button class="btn ghost" type="button" data-hub="1">All quizzes</button><span class="fine" id="rAttempt"></span></div>
     </div>
   </section>
 </div>
@@ -1185,6 +1188,19 @@ select.chin { appearance: auto; }
   </div>
 </div>
 
+<div class="veil" id="shareDlg" hidden role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+  <div class="vcard glass">
+    <div class="eyebrow">Share your result</div>
+    <h2 id="shareTitle" tabindex="-1">Your score card</h2>
+    <img id="shareImg" alt="Your score card" class="shareimg">
+    <p class="cherr" id="shareMsg" role="status"></p>
+    <div class="row">
+      <button type="button" class="btn" id="shareDo">Share</button>
+      <button type="button" class="btn ghost" id="shareSave">Save image</button>
+      <button type="button" class="btn ghost" id="shareClose">Close</button>
+    </div>
+  </div>
+</div>
 <div class="veil" id="chDlg" hidden role="dialog" aria-modal="true" aria-labelledby="chTitle">
   <div class="vcard glass">
     <div class="eyebrow" id="chEye">Versus</div>
@@ -1484,7 +1500,7 @@ select.chin { appearance: auto; }
     if (!REDUCE && !once && skyOn) requestAnimationFrame(drawSky);
   }
   (function () {
-    var ids = ["badgesDlg", "sourcesDlg", "rulesInfo", "chDlg"];
+    var ids = ["badgesDlg", "sourcesDlg", "rulesInfo", "chDlg", "shareDlg"];
     function sync() {
       var open = ids.some(function (i) { var e = document.getElementById(i); return e && !e.hidden; });
       document.body.classList.toggle("dlg", open);
@@ -2771,6 +2787,25 @@ select.chin { appearance: auto; }
       });
     });
   }
+  var RANKS = {
+    perfect: ["Flawless. Touch grass, you earned it", "Okay, did you write this quiz?", "Marvel should hire you", "Perfect score. Suspiciously perfect", "Zero misses? You're the real Marvel-ous one"],
+    top: ["So close to perfect it hurts", "Big brain energy", "Basically a walking wiki", "Elite fan. Slight smugness allowed", "You clearly paid attention"],
+    great: ["Solid. You've definitely seen this", "Respectable. Nick Fury is impressed", "Strong run, hero", "Rewatch club, member in good standing", "Almost mastered. Almost"],
+    good: ["Fine, you passed. Barely a flex", "Snapped back from the brink", "Decent, but the credits scenes miss you", "Passed, but your rewatch list is calling", "Not bad. Not Avengers-level either"],
+    mid: ["Did you watch this on your phone at 2x?", "Casual viewer detected", "Watched half of it and napped", "You were there. Mentally, maybe not", "Needs a rewatch, honestly"],
+    low: ["Did you even watch this?", "Were you scrolling during the movie?", "Spoiler: you missed a lot", "Skipped to the end credits, huh?", "That was brave. And wrong"],
+    bad: ["Have you ever seen a Marvel movie?", "Did you just guess? Be honest", "Thanos did less damage than this", "Wrong movie, maybe?", "Time to restart your watchlist"],
+    zero: ["A perfectly balanced zero", "Zero. Impressive in its own way", "Did you answer these with your eyes closed?", "Blip survivor, memory wiped", "Even a Skrull would've gotten one"],
+    quit: ["You left faster than a Quinjet with no pilot", "Gave up so fast Quicksilver is jealous", "Tapped out. Even Groot stuck around", "Rage quit detected. Hulk is taking notes", "Ran away like Ant-Man at a Hulk fight", "Surrendered before the first snap", "That was less a quiz, more a getaway", "Your attention span called in sick", "Left the multiverse before the credits"],
+    strikes: ["Disqualified. The TVA has been notified", "Caught peeking. Loki would be proud", "Variant detected. Pruning in progress", "Nice try, but Uatu saw everything", "Cheating is not a time-travel loophole"]
+  };
+  function rankLine(score, n, tier, why) {
+    var p = score / n, pool;
+    if (why === "strikes") pool = RANKS.strikes; else if (why === "quit") pool = RANKS.quit;
+    else if (tier === "perfect") pool = RANKS.perfect; else if (p >= .9) pool = RANKS.top; else if (p >= .8) pool = RANKS.great;
+    else if (p >= .65) pool = RANKS.good; else if (p >= .45) pool = RANKS.mid; else if (p >= .25) pool = RANKS.low; else if (score > 0) pool = RANKS.bad; else pool = RANKS.zero;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
   function finishNow(why, oks) {
     if (!S || S.done) return;
     S.done = true; clearInterval(S.timer); clearTimeout(S.next);
@@ -2795,6 +2830,7 @@ select.chin { appearance: auto; }
     chFinish(score, used, why);
     var pass = score >= PASS && why !== "strikes" && why !== "quit";
     var tier = pass ? tierOf(score, NQ, true) : "fail";
+    LASTRES = { id: DB.id, name: DB.name, film: S.film ? DB.E[S.film - 1] : "", level: LEVELS[S.level], score: score, n: NQ, tier: tier, time: fmt(used), kind: DB.kind };
     $("result").setAttribute("data-tier", tier);
     $("rStamp").className = "stamp " + tier + (tier === "fail" ? " glitch" : "");
     $("rStamp").textContent = TIER_NAME[tier];
@@ -2818,7 +2854,7 @@ select.chin { appearance: auto; }
     var sc = $("rScore"), n0 = 0;
     if (REDUCE || score === 0) sc.textContent = score;
     else { sc.textContent = "0"; var iv = setInterval(function () { n0++; sc.textContent = n0; if (n0 >= score) clearInterval(iv); }, Math.max(25, 900 / score)); }
-    $("rRank").textContent = tier === "perfect" ? "Flawless victory" : score >= Math.ceil(NQ * .9) ? "Captain America material" : score >= Math.ceil(NQ * .73) ? "Super soldier" : score >= Math.ceil(NQ * .5) ? "Dora Milaje recruit" : score >= Math.ceil(NQ * .27) ? "Flag Smasher" : "Back to the Raft";
+    $("rRank").textContent = rankLine(score, NQ, tier, why);
     var flag = $("rFlag");
     if (why === "time") { var unanswered = NQ - answered; flag.hidden = false; flag.textContent = "Time ran out with " + unanswered + " question" + (unanswered === 1 ? "" : "s") + " unanswered. Unanswered questions score zero."; }
     else if (why === "strikes") { flag.hidden = false; flag.textContent = "Ended early for integrity violations. Automatic fail."; }
@@ -3089,6 +3125,135 @@ select.chin { appearance: auto; }
   }
   function loadPrefs() { try { return JSON.parse(localStorage.getItem("fws-chprefs") || "null") || {}; } catch (e) { return {}; } }
   function savePrefs() { try { localStorage.setItem("fws-chprefs", JSON.stringify({ q: chQ.id, f: chF, l: chL, d: chDelay })); } catch (e) {} }
+
+  // ---------- share card ----------
+  var LASTRES = null, shareBlob = null, shareLast = null;
+  function qColors2(id) {
+    var t = document.createElement("div"); t.className = "qz"; t.setAttribute("data-id", id); t.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;width:0;height:0;overflow:hidden";
+    document.body.appendChild(t); var cs = getComputedStyle(t);
+    var a = [cs.getPropertyValue("--c").trim() || "#7ca7ff", cs.getPropertyValue("--c2").trim() || "#e23b3b"]; document.body.removeChild(t); return a;
+  }
+  function wrapText(c, text, x, y, maxW, lh, maxLines) {
+    var words = String(text).split(" "), line = "", lines = [];
+    words.forEach(function (w) { var t = line ? line + " " + w : w; if (c.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+    if (line) lines.push(line);
+    lines = lines.slice(0, maxLines);
+    lines.forEach(function (l, i) { c.fillText(l, x, y + i * lh); });
+    return lines.length;
+  }
+  function svgImg(svg, cb) {
+    var im = new Image(); im.onload = function () { cb(im); }; im.onerror = function () { cb(null); };
+    im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+  function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function drawShareCard(R, rank, badges, done) {
+    var qz = ALL.filter(function (q) { return q.id === R.id; })[0], col = qColors2(R.id);
+    var TC = { fail: "#ff6b7d", pass: "#59e0a0", mastered: "#f3d98e", perfect: "#7fe8ff" }[R.tier] || "#f3d98e";
+    var cover = qz ? coverSVG(qz).replace(/var\(--c2\)/g, col[1]).replace(/var\(--c\)/g, col[0]).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="960" height="576" ') : null;
+    var medal = medalSVG(R.tier).replace(/currentColor/g, TC).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" ');
+    function go(ci, mi) {
+      var W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+      var F = '"Arial Black", "Helvetica Neue", Arial, sans-serif', M = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+      // background
+      var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0c1330"); bg.addColorStop(.5, "#070b18"); bg.addColorStop(1, "#0b0714"); c.fillStyle = bg; c.fillRect(0, 0, W, H);
+      var g1 = c.createRadialGradient(W, 0, 0, W, 0, 1000); g1.addColorStop(0, col[0]); g1.addColorStop(1, "rgba(0,0,0,0)"); c.globalAlpha = .34; c.fillStyle = g1; c.fillRect(0, 0, W, H);
+      var g2 = c.createRadialGradient(0, H, 0, 0, H, 900); g2.addColorStop(0, col[1]); g2.addColorStop(1, "rgba(0,0,0,0)"); c.globalAlpha = .26; c.fillStyle = g2; c.fillRect(0, 0, W, H); c.globalAlpha = 1;
+      var seed = 11; function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+      for (var i = 0; i < 110; i++) { c.globalAlpha = .12 + rnd() * .55; c.fillStyle = "#fff"; c.beginPath(); c.arc(rnd() * W, rnd() * H, .5 + rnd() * 1.5, 0, 6.283); c.fill(); }
+      c.globalAlpha = 1;
+      c.textAlign = "center"; c.textBaseline = "alphabetic";
+      // header
+      c.fillStyle = "#e4c06d"; c.font = "700 27px " + M; c.fillText("MCU QUIZ HUB", W / 2, 96);
+      c.fillStyle = "rgba(255,255,255,.4)"; c.font = "600 20px " + M; c.fillText("UNOFFICIAL FAN QUIZ", W / 2, 128);
+      c.strokeStyle = "rgba(255,255,255,.14)"; c.lineWidth = 2; c.beginPath(); c.moveTo(60, 156); c.lineTo(W - 60, 156); c.stroke();
+      // banner
+      var bx = 60, by = 186, bw = 960, bh = 576;
+      c.save(); c.shadowColor = col[0]; c.shadowBlur = 60; c.fillStyle = "#050813"; rr(c, bx, by, bw, bh, 34); c.fill(); c.restore();
+      c.save(); rr(c, bx, by, bw, bh, 34); c.clip();
+      if (ci) c.drawImage(ci, bx, by, bw, bh);
+      else { var bgg = c.createLinearGradient(bx, by, bx + bw, by + bh); bgg.addColorStop(0, col[0]); bgg.addColorStop(1, col[1]); c.fillStyle = bgg; c.globalAlpha = .6; c.fillRect(bx, by, bw, bh); c.globalAlpha = 1; }
+      var sh = c.createLinearGradient(0, by + bh - 330, 0, by + bh); sh.addColorStop(0, "rgba(5,8,19,0)"); sh.addColorStop(.55, "rgba(5,8,19,.7)"); sh.addColorStop(1, "rgba(5,8,19,.96)"); c.fillStyle = sh; c.fillRect(bx, by + bh - 330, bw, 330);
+      var sh2 = c.createLinearGradient(0, by, 0, by + 140); sh2.addColorStop(0, "rgba(5,8,19,.55)"); sh2.addColorStop(1, "rgba(5,8,19,0)"); c.fillStyle = sh2; c.fillRect(bx, by, bw, 140);
+      c.restore();
+      var bord = c.createLinearGradient(bx, by, bx + bw, by + bh); bord.addColorStop(0, col[0]); bord.addColorStop(1, col[1]); c.strokeStyle = bord; c.lineWidth = 4; rr(c, bx, by, bw, bh, 34); c.stroke();
+      // type chip
+      var kind = (R.kind === "movie" ? "MOVIE" : R.kind === "special" ? "SPECIAL" : "SERIES") + (qz && qz.year ? "  ·  " + qz.year : "");
+      c.font = "700 24px " + M; var cw = c.measureText(kind).width + 48;
+      c.fillStyle = "rgba(5,8,19,.72)"; rr(c, bx + 28, by + 28, cw, 52, 26); c.fill(); c.strokeStyle = "rgba(255,255,255,.28)"; c.lineWidth = 2; rr(c, bx + 28, by + 28, cw, 52, 26); c.stroke();
+      c.textAlign = "left"; c.fillStyle = "#fff"; c.fillText(kind, bx + 52, by + 63); c.textAlign = "center";
+      // name on banner
+      c.fillStyle = "#fff"; var sz = 76; c.font = "900 " + sz + "px " + F; var nm = R.name.toUpperCase();
+      while (c.measureText(nm).width > bw - 340 && sz > 44) { sz -= 4; c.font = "900 " + sz + "px " + F; }
+      c.textAlign = "left"; c.shadowColor = "rgba(0,0,0,.7)"; c.shadowBlur = 18;
+      var lines = []; (function () { var words = nm.split(" "), line = ""; words.forEach(function (w) { var t = line ? line + " " + w : w; if (c.measureText(t).width > bw - 340 && line) { lines.push(line); line = w; } else line = t; }); if (line) lines.push(line); lines = lines.slice(0, 2); })();
+      var ny = by + bh - 70 - (lines.length - 1) * (sz + 6);
+      lines.forEach(function (l, k) { c.fillText(l, bx + 44, ny + k * (sz + 6)); });
+      c.shadowBlur = 0; c.fillStyle = "rgba(255,255,255,.78)"; c.font = "600 27px " + M;
+      var sub = R.level.toUpperCase() + " MODE  ·  " + (R.film ? R.film.toUpperCase() : "WHOLE QUIZ"); while (c.measureText(sub).width > bw - 340) sub = sub.slice(0, -4) + "...";
+      c.fillText(sub, bx + 46, by + bh - 24);
+      c.textAlign = "center";
+      // medal seal
+      var mx = bx + bw - 130, my = by + bh - 100;
+      c.fillStyle = "#070b18"; c.beginPath(); c.arc(mx, my, 104, 0, 6.283); c.fill();
+      c.strokeStyle = TC; c.lineWidth = 5; c.beginPath(); c.arc(mx, my, 104, 0, 6.283); c.stroke(); c.globalAlpha = .35; c.lineWidth = 2; c.beginPath(); c.arc(mx, my, 118, 0, 6.283); c.stroke(); c.globalAlpha = 1;
+      if (mi) c.drawImage(mi, mx - 66, my - 66, 132, 132);
+      // score panel
+      var py = 800, ph = 300;
+      c.fillStyle = "rgba(255,255,255,.05)"; rr(c, 60, py, 960, ph, 30); c.fill(); c.strokeStyle = "rgba(255,255,255,.16)"; c.lineWidth = 2; rr(c, 60, py, 960, ph, 30); c.stroke();
+      c.fillStyle = TC; rr(c, 60, py + 40, 8, ph - 80, 4); c.fill();
+      c.textAlign = "left"; c.fillStyle = "rgba(255,255,255,.55)"; c.font = "700 24px " + M; c.fillText("YOUR SCORE", 112, py + 70);
+      c.fillStyle = "#fff"; c.font = "900 190px " + F; c.fillText(String(R.score), 106, py + 238);
+      var sw = c.measureText(String(R.score)).width; c.fillStyle = "rgba(255,255,255,.5)"; c.font = "900 70px " + F; c.fillText("/" + R.n, 106 + sw + 14, py + 238);
+      var lab = ({ fail: "NOT PASSED", pass: "PASSED", mastered: "MASTERED", perfect: "PERFECT SCORE" })[R.tier];
+      c.font = "800 34px " + F; var tw = c.measureText(lab).width + 60, tx = W - 60 - 44 - tw;
+      c.fillStyle = "rgba(255,255,255,.06)"; c.strokeStyle = TC; c.lineWidth = 3; rr(c, tx, py + 56, tw, 64, 32); c.fill(); c.stroke();
+      c.fillStyle = TC; c.textAlign = "center"; c.fillText(lab, tx + tw / 2, py + 100);
+      c.textAlign = "right"; c.fillStyle = "#fff"; c.font = "800 32px " + F;
+      var rk = (rank || "").toUpperCase(), rl = [], rw = rk.split(" "), cur = ""; rw.forEach(function (w) { var t = cur ? cur + " " + w : w; if (c.measureText(t).width > 500 && cur) { rl.push(cur); cur = w; } else cur = t; }); if (cur) rl.push(cur);
+      rl.slice(0, 3).forEach(function (l, k) { c.fillText(l, W - 104, py + 168 + k * 40); });
+      c.fillStyle = "rgba(255,255,255,.5)"; c.font = "600 22px " + M; c.fillText(Math.round(R.score / R.n * 100) + "% CORRECT", W - 104, py + 270);
+      // stats
+      c.textAlign = "center";
+      var st = [[R.time, "TIME"], [badges + " / 20", "BADGES"], [R.n + "", "QUESTIONS"]];
+      st.forEach(function (x, k) { var cx = 60 + 160 + k * 320; c.fillStyle = "#fff"; c.font = "800 50px " + F; c.fillText(x[0], cx, 1190); c.fillStyle = "rgba(255,255,255,.5)"; c.font = "600 21px " + M; c.fillText(x[1], cx, 1226); if (k) { c.strokeStyle = "rgba(255,255,255,.14)"; c.lineWidth = 2; c.beginPath(); c.moveTo(60 + k * 320, 1150); c.lineTo(60 + k * 320, 1230); c.stroke(); } });
+      // footer
+      c.fillStyle = "#e4c06d"; c.font = "700 26px " + M; c.fillText("THINK YOU CAN BEAT IT?", W / 2, 1292);
+      var url = ""; try { url = location.href.split("#")[0].replace(/^https?:\/\//, "").replace(/\/index\.html$/, "").replace(/\/$/, ""); } catch (e) {}
+      if (url && url.length < 52 && url.indexOf("claude") < 0 && url.indexOf("file") !== 0) { c.fillStyle = "rgba(255,255,255,.5)"; c.font = "600 21px " + M; c.fillText(url, W / 2, 1326); }
+      done(cv);
+    }
+    svgImg(cover || "<svg xmlns='http://www.w3.org/2000/svg'/>", function (ci) { svgImg(medal, function (mi) { go(ci, mi); }); });
+  }
+  function openShare() {
+    if (!LASTRES) return;
+    shareLast = document.activeElement; $("shareMsg").textContent = ""; shareBlob = null;
+    $("shareImg").removeAttribute("src");
+    $("shareDlg").hidden = false; window.scrollTo(0, 0); $("shareTitle").focus(); SFX.pick();
+    drawShareCard(LASTRES, $("rRank").textContent, badgeCount(), function (cv) {
+      $("shareImg").src = cv.toDataURL("image/png");
+      cv.toBlob(function (b) { shareBlob = b; }, "image/png");
+    });
+  }
+  function closeShare() { $("shareDlg").hidden = true; if (shareLast && document.body.contains(shareLast) && shareLast.focus) shareLast.focus(); }
+  function saveShare() {
+    var a = document.createElement("a"); a.download = "mcu-quiz-score.png"; a.href = $("shareImg").src; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    $("shareMsg").textContent = "Image saved. On a phone you can also press and hold the picture to save it.";
+  }
+  function doShare() {
+    var R = LASTRES; if (!R) return;
+    var text = "I got " + R.score + "/" + R.n + " on the " + R.name + " quiz (" + R.level + " mode). Think you can beat it?";
+    if (shareBlob && navigator.canShare && window.File) {
+      var f = new File([shareBlob], "mcu-quiz-score.png", { type: "image/png" });
+      if (navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: text }).catch(function () {}); return; }
+    }
+    if (navigator.share) { navigator.share({ text: text, url: location.href.split("#")[0] }).catch(function () {}); return; }
+    saveShare();
+  }
+  $("shareBtn").addEventListener("click", openShare);
+  $("shareClose").addEventListener("click", closeShare);
+  $("shareSave").addEventListener("click", saveShare);
+  $("shareDo").addEventListener("click", doShare);
+  $("shareDlg").addEventListener("keydown", function (e) { if (e.key === "Escape") closeShare(); });
   function chOpen(name, preset) {
     chLast = document.activeElement; chBox.hidden = false; chPane(name); SFX.pick();
     $("chErr").textContent = ""; $("chErr2").textContent = "";
