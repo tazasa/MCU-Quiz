@@ -1019,6 +1019,16 @@ select.chin { appearance: auto; }
 .ans.ok { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.3); } .ans.ok i { background: var(--ok); color: #04170f; } .ans.ok small { color: var(--ok); }
 .mc-src { justify-self: start; font-size: 12px; color: var(--gold); text-decoration: none; border-bottom: 1px dashed color-mix(in srgb, var(--gold) 55%, transparent); }
 @media (max-width: 560px) { .missed-card { padding: 15px 14px; } .missed-card h3 { font-size: 16px; } .mtabs { width: 100%; } .mtab { flex: 1; text-align: center; } }
+.xfer { text-align: left; max-width: 560px; max-height: 90vh; overflow: auto; border-color: rgba(228,192,109,.45); }
+.xfer textarea { width: 100%; min-height: 64px; resize: vertical; background: rgba(0,0,0,.35); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font: 12px ui-monospace, monospace; }
+.xfer .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.xfer > div { display: grid; gap: 10px; }
+.xfer [hidden] { display: none !important; }
+.xfer > .xtabs { display: flex; gap: 6px; }
+.xtab { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 700 13px var(--display); cursor: pointer; }
+.xtab.on { color: var(--ink); border-color: rgba(228,192,109,.6); background: rgba(228,192,109,.12); }
+#xMsg { min-height: 1.2em; }
+#xMsg.bad { color: #ff8b92; }
 </style>
 </head>
 <body>
@@ -1215,9 +1225,8 @@ select.chin { appearance: auto; }
     </div>
     <div class="bgroups" id="badgesGrid"></div>
     <div class="bsave">
-      <p class="bmeta">Progress is saved automatically in this browser. To move it, copy your save code and paste it on the other device. Save codes can be reused by anyone who has a copy; this offline page cannot limit a code to one device. Importing merges progress and may increase displayed scores.</p>
-      <textarea id="impBox" spellcheck="false" placeholder="Save code appears here, or paste one to restore"></textarea>
-      <div class="row"><button class="btn ghost" id="expBtn" type="button">Show &amp; copy save code</button><button class="btn ghost" id="impBtn" type="button">Restore from code</button><span class="fine" id="saveMsg"></span></div>
+      <p class="bmeta">Progress is saved automatically in this browser. To move it to another device, use a one-time secure transfer: the other device is erased once the move is confirmed.</p>
+      <div class="row"><button class="btn ghost" id="xferOpen" type="button">Transfer progress…</button><span class="fine" id="xferNote"></span></div>
     </div>
     <div class="row"><button class="btn" id="badgesClose" type="button">Close</button></div>
   </div>
@@ -1302,6 +1311,50 @@ select.chin { appearance: auto; }
     </ul>
     <p style="color:var(--muted);margin:0">These are the main ones, not a full list. Each violation costs 1 minute; a second one ends the quiz as a fail.</p>
     <div class="row"><button class="btn" id="rulesClose" type="button">Got it</button></div>
+  </div>
+</div>
+
+<div class="veil" id="xferDlg" hidden role="dialog" aria-modal="true" aria-labelledby="xferTitle">
+  <div class="vcard glass xfer">
+    <div class="eyebrow">One-time secure transfer</div>
+    <h2 id="xferTitle" tabindex="-1">Move your progress</h2>
+    <div class="xtabs" role="tablist">
+      <button type="button" class="xtab on" id="xtRecv" role="tab">Receive here</button>
+      <button type="button" class="xtab" id="xtSend" role="tab">Send from here</button>
+    </div>
+    <div id="xpRecv">
+      <p class="bmeta">On the device that should <b>get</b> the progress: make a receive code, then copy it to the old device.</p>
+      <div class="row"><button class="btn ghost" id="xMake" type="button">Make receive code</button><button class="btn ghost" id="xCancelReq" type="button" hidden>Cancel</button></div>
+      <div id="xReqBox" hidden>
+        <textarea id="xReq" data-ok="1" readonly spellcheck="false"></textarea>
+        <div class="row"><button class="btn ghost" id="xCopyReq" type="button">Copy</button><span class="fine">Valid for 30 minutes, works once, only on this device.</span></div>
+        <p class="bmeta">Then paste the transfer code the old device gives you:</p>
+        <textarea id="xIn" data-ok="1" spellcheck="false" placeholder="Paste transfer code (starts with MQ1T.)"></textarea>
+        <div class="row"><button class="btn" id="xImport" type="button">Import</button></div>
+      </div>
+      <div id="xRcptBox" hidden>
+        <p class="bmeta"><b>Imported.</b> Copy this receipt to the old device so it can erase itself:</p>
+        <textarea id="xRcpt" data-ok="1" readonly spellcheck="false"></textarea>
+        <div class="row"><button class="btn ghost" id="xCopyRcpt" type="button">Copy receipt</button></div>
+      </div>
+    </div>
+    <div id="xpSend" hidden>
+      <div id="xSendNew">
+        <p class="bmeta">On the device that <b>has</b> the progress: paste the receive code from the new device. Your progress is encrypted so only that device can read it. This device is locked until the new device confirms, then it is erased.</p>
+        <textarea id="xRq" data-ok="1" spellcheck="false" placeholder="Paste receive code (starts with MQ1R.)"></textarea>
+        <div class="row"><button class="btn" id="xEnc" type="button">Encrypt and lock this device</button></div>
+      </div>
+      <div id="xSendWait" hidden>
+        <p class="bmeta" id="xWaitMsg"></p>
+        <textarea id="xOut" data-ok="1" readonly spellcheck="false"></textarea>
+        <div class="row"><button class="btn ghost" id="xCopyOut" type="button">Copy transfer code</button></div>
+        <p class="bmeta">After importing, the new device shows a receipt. Paste it here:</p>
+        <textarea id="xRc" data-ok="1" spellcheck="false" placeholder="Paste receipt (starts with MQ1C.)"></textarea>
+        <div class="row"><button class="btn" id="xConfirm" type="button">Confirm and erase this device</button><button class="btn ghost" id="xAbandon" type="button">Erase without confirming</button></div>
+      </div>
+    </div>
+    <p class="fine" id="xMsg" role="status"></p>
+    <div class="row"><button class="btn" id="xferClose" type="button">Close</button></div>
   </div>
 </div>
 
@@ -1589,7 +1642,7 @@ select.chin { appearance: auto; }
   var RNG = null;
   function mulberry(a) { return function () { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return (t ^ (t >>> 14)) >>> 0; }; }
   function fillRand(r) { if (RNG) { for (var i = 0; i < r.length; i++) r[i] = RNG(); } else crypto.getRandomValues(r); return r; }
-  function isField(t) { return !!(t && (t.id === "impBox" || (t.getAttribute && t.getAttribute("data-ok") === "1"))); }
+  function isField(t) { return !!(t && ((t.getAttribute && t.getAttribute("data-ok") === "1"))); }
   function shuffle(a) {
     var r = new Uint32Array(a.length); fillRand(r);
     for (var i = a.length - 1; i > 0; i--) { var j = r[i] % (i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
@@ -1893,10 +1946,20 @@ select.chin { appearance: auto; }
     $("badgeProgressFill").style.width = pct + "%";
   }
   function badgeCount() { var p = loadP(), n = 0; BADGES.forEach(function (b) { if (p.badges[b.id] || b.t(p)) n++; }); return n; }
-  function exportCode() {
-    var o = { v: 1, p: loadP(), best: {}, att: {} };
+  function lsKeys(prefix) { var out = []; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf(prefix) === 0) out.push(k); } } catch (e) {} return out; }
+  function buildPayload() {
+    var o = { v: 2, p: loadP(), best: {}, fbest: {}, att: {} };
     ALL.forEach(function (q) { var b = best(q.id); if (b) o.best[q.id] = b; var a = store0("att-" + q.id); if (a) o.att[q.id] = a; });
-    return btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+    lsKeys("fbest-").forEach(function (k) {
+      var m = /^fbest-(.+)-(\d+)$/.exec(k), v = null; if (!m) return;
+      try { v = JSON.parse(localStorage.getItem(k) || "null"); } catch (e) {}
+      if (v) o.fbest[m[1] + "|" + m[2]] = v;
+    });
+    return o;
+  }
+  // Erase everything this device knows about the player's progress.
+  function wipeProgress() {
+    ["mcu-progress-v1"].concat(lsKeys("best-"), lsKeys("fbest-"), lsKeys("att-")).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
   }
   function isRecord(o) { return !!o && typeof o === "object" && !Array.isArray(o); }
   function onlyKeys(o, allowed) {
@@ -1934,9 +1997,16 @@ select.chin { appearance: auto; }
       best.s <= best.n && ["Mixed", "Easy", "Medium", "Hard"].indexOf(best.l) !== -1 &&
       typeof best.p === "boolean";
   }
+  function validFbest(map) {
+    return isRecord(map) && Object.keys(map).every(function (key) {
+      var sp = key.lastIndexOf("|"), quiz = sp > 0 && quizForId(key.slice(0, sp)), k = Number(key.slice(sp + 1)), v = map[key];
+      return quiz && /^[1-9][0-9]?$/.test(key.slice(sp + 1)) && k <= (quiz.E || []).length && isRecord(v) && onlyKeys(v, ["s", "n", "l", "p"]) &&
+        safeCount(v.s) && safeCount(v.n) && v.n >= 1 && v.n <= 100 && v.s <= v.n && ["Mixed", "Easy", "Medium", "Hard"].indexOf(v.l) !== -1 && typeof v.p === "boolean";
+    });
+  }
   function validTransfer(o) {
-    if (!isRecord(o) || !onlyKeys(o, ["v", "p", "best", "att"]) || o.v !== 1 ||
-        !validProgress(o.p) || !isRecord(o.best) || !isRecord(o.att)) return false;
+    if (!isRecord(o) || !onlyKeys(o, ["v", "p", "best", "fbest", "att", "tid", "ts"]) || o.v !== 2 ||
+        !validProgress(o.p) || !isRecord(o.best) || !isRecord(o.att) || !validFbest(o.fbest)) return false;
     if (!Object.keys(o.best).every(function (id) {
       var quiz = quizForId(id);
       return !!quiz && validBest(o.best[id], quiz);
@@ -1947,14 +2017,11 @@ select.chin { appearance: auto; }
         /^(0|[1-9][0-9]*)$/.test(value) && safeCount(Number(value));
     });
   }
-  function importCode(s) {
-    var o, code = String(s).replace(/\s+/g, "");
-    if (!code || code.length > 200000) return false;
-    try { o = JSON.parse(decodeURIComponent(escape(atob(code)))); } catch (e) { return false; }
-    try { if (o && o.p) { ["pass", "perf"].forEach(function (k) { Object.keys(o.p[k] || {}).forEach(function (kk) { if (kk.indexOf("bnw|") === 0) delete o.p[k][kk]; }); }); if (o.best) delete o.best.bnw; if (o.att) delete o.att.bnw; } } catch (e) {}
+  // Merge a decrypted, validated transfer into this device (keeps the higher score for each entry).
+  function applyTransfer(o) {
     if (!validTransfer(o)) return false;
     var cur = loadP(), inc = o.p;
-    ["pass"].forEach(function (k) { Object.keys(inc[k] || {}).forEach(function (kk) { if (cur[k][kk] === undefined || inc[k][kk] > cur[k][kk]) cur[k][kk] = inc[k][kk]; }); });
+    Object.keys(inc.pass || {}).forEach(function (kk) { if (cur.pass[kk] === undefined || inc.pass[kk] > cur.pass[kk]) cur.pass[kk] = inc.pass[kk]; });
     Object.keys(inc.perf || {}).forEach(function (kk) { cur.perf[kk] = 1; });
     Object.keys(inc.badges || {}).forEach(function (kk) { if (!cur.badges[kk]) cur.badges[kk] = inc.badges[kk]; });
     ["plays", "clean", "fast"].forEach(function (k) { cur[k] = Math.max(cur[k] || 0, inc[k] || 0); });
@@ -1964,6 +2031,10 @@ select.chin { appearance: auto; }
         var b = o.best[id], c = best(id);
         if (!c || b.s > c.s) localStorage.setItem("best-" + id, JSON.stringify(b));
       });
+      Object.keys(o.fbest).forEach(function (key) {
+        var sp = key.lastIndexOf("|"), id = key.slice(0, sp), k = key.slice(sp + 1), b = o.fbest[key], c = fbest(id, k);
+        if (!c || b.s > c.s) localStorage.setItem("fbest-" + id + "-" + k, JSON.stringify(b));
+      });
       Object.keys(o.att).forEach(function (id) {
         var a = Number(o.att[id]), current = Number(store0("att-" + id) || "0") || 0;
         if (a > current) localStorage.setItem("att-" + id, String(a));
@@ -1971,6 +2042,105 @@ select.chin { appearance: auto; }
     } catch (e) { return false; }
     return true;
   }
+  // One-time, device-bound progress transfer. The receiving device makes a key pair and keeps the private half; the sending
+  // device encrypts to the public half, so a copied transfer code is useless anywhere else. The receiving device deletes its key
+  // after one successful import, and the sending device only erases itself once it is shown a receipt only the receiver could make.
+  var XF = (function () {
+    var enc = new TextEncoder(), KRCV = "mcu-xfer-rcv", KSND = "mcu-xfer-snd", KDONE = "mcu-xfer-done", KRCPT = "mcu-xfer-rcpt", REQ_TTL = 30 * 60;
+    var EC = { name: "ECDH", namedCurve: "P-256" };
+    function fail(m) { return Promise.reject(new Error(m)); }
+    function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+    function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+    function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+    function b64u(buf) { var b = new Uint8Array(buf), s = ""; for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+    function unb64u(t) { t = String(t).replace(/-/g, "+").replace(/_/g, "/"); while (t.length % 4) t += "="; var s = atob(t), b = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; }
+    function cat() { var n = 0, i, o, p = 0; for (i = 0; i < arguments.length; i++) n += arguments[i].length; o = new Uint8Array(n); for (i = 0; i < arguments.length; i++) { o.set(arguments[i], p); p += arguments[i].length; } return o; }
+    function rnd(n) { return crypto.getRandomValues(new Uint8Array(n)); }
+    function same(a, b) { if (a.length !== b.length) return false; var d = 0; for (var i = 0; i < a.length; i++) d |= a[i] ^ b[i]; return d === 0; }
+    function clean(c, tag) { c = String(c || "").replace(/\s+/g, ""); return c.indexOf(tag) === 0 && c.length < 400000 ? c.slice(tag.length) : null; }
+    function keysFor(priv, pubRaw, salt) {
+      return crypto.subtle.importKey("raw", pubRaw, EC, false, []).then(function (pub) { return crypto.subtle.deriveBits({ name: "ECDH", public: pub }, priv, 256); })
+        .then(function (bits) { return crypto.subtle.importKey("raw", bits, "HKDF", false, ["deriveBits"]); })
+        .then(function (k) { return crypto.subtle.deriveBits({ name: "HKDF", hash: "SHA-256", salt: salt, info: enc.encode("mcu-xfer-v2") }, k, 512); })
+        .then(function (km) { km = new Uint8Array(km); return Promise.all([crypto.subtle.importKey("raw", km.slice(0, 32), "AES-GCM", false, ["encrypt", "decrypt"]), crypto.subtle.importKey("raw", km.slice(32), { name: "HMAC", hash: "SHA-256" }, false, ["sign"])]); })
+        .then(function (r) { return { aes: r[0], mac: r[1] }; });
+    }
+    function receipt(keys, rid, tid) { return crypto.subtle.sign("HMAC", keys.mac, cat(enc.encode("receipt"), rid, tid)).then(function (m) { return new Uint8Array(m).slice(0, 12); }); }
+    function ok() { return !!(window.crypto && crypto.subtle && crypto.subtle.generateKey); }
+    return {
+      supported: ok,
+      pending: function () { return lsGet(KSND); },
+      locked: function () { var s = lsGet(KSND); return !!s && !s.wiped; },
+      request: function () { return lsGet(KRCV); },
+      lastReceipt: function () { return lsGet(KRCPT); },
+      // Receiving device: make a one-time receive code.
+      makeRequest: function () {
+        if (!ok()) return fail("This browser can't do secure transfers. Try a current browser over https.");
+        return crypto.subtle.generateKey(EC, true, ["deriveBits"]).then(function (kp) {
+          return Promise.all([crypto.subtle.exportKey("raw", kp.publicKey), crypto.subtle.exportKey("jwk", kp.privateKey)]).then(function (r) {
+            var rid = rnd(8), ts = Math.floor(Date.now() / 1000), t4 = new Uint8Array([(ts >>> 24) & 255, (ts >>> 16) & 255, (ts >>> 8) & 255, ts & 255]);
+            var code = "MQ1R." + b64u(cat(rid, t4, new Uint8Array(r[0])));
+            if (!lsSet(KRCV, { rid: b64u(rid), priv: r[1], ts: Date.now(), code: code })) return fail("Couldn't save the receive code in this browser.");
+            lsDel(KRCPT); return code;
+          });
+        });
+      },
+      cancelRequest: function () { lsDel(KRCV); },
+      // Sending device: encrypt this device's progress for the device that made the receive code.
+      send: function (reqCode) {
+        if (!ok()) return fail("This browser can't do secure transfers. Try a current browser over https.");
+        if (lsGet(KSND)) return fail("A transfer is already waiting on this device.");
+        var c = clean(reqCode, "MQ1R."), b; try { b = c && unb64u(c); } catch (e) { b = null; }
+        if (!b || b.length !== 77) return fail("That isn't a receive code. Copy it from the other device again.");
+        var rid = b.slice(0, 8), ts = ((b[8] << 24) | (b[9] << 16) | (b[10] << 8) | b[11]) >>> 0, pubRaw = b.slice(12);
+        if (Math.abs(Date.now() / 1000 - ts) > REQ_TTL + 120) return fail("That receive code has expired (they last 30 minutes). Make a new one, and check both devices have the right time.");
+        var tid = rnd(8), eph, ephPub, keys, iv = rnd(12), o = buildPayload();
+        o.tid = b64u(tid); o.ts = Date.now();
+        if (!validTransfer(o)) return fail("This device's progress couldn't be packaged.");
+        return crypto.subtle.generateKey(EC, true, ["deriveBits"]).then(function (kp) { eph = kp; return crypto.subtle.exportKey("raw", kp.publicKey); })
+          .then(function (pr) { ephPub = new Uint8Array(pr); return keysFor(eph.privateKey, pubRaw, cat(rid, tid)); })
+          .then(function (k) { keys = k; return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv, additionalData: cat(rid, tid) }, keys.aes, enc.encode(JSON.stringify(o))); })
+          .then(function (ct) { return receipt(keys, rid, tid).then(function (mac) { return { ct: new Uint8Array(ct), mac: mac }; }); })
+          .then(function (r) {
+            var code = "MQ1T." + b64u(cat(tid, ephPub, iv, r.ct));
+            if (!lsSet(KSND, { tid: b64u(tid), rid: b64u(rid), rcpt: b64u(r.mac), code: code, ts: Date.now() })) return fail("Couldn't save the pending transfer in this browser.");
+            return code;
+          }, function () { return fail("That receive code is not valid."); });
+      },
+      // Receiving device: decrypt, check and merge. Works once, then the key is destroyed.
+      importTransfer: function (code) {
+        var st = lsGet(KRCV); if (!st) return fail("Make a receive code on this device first.");
+        var c = clean(code, "MQ1T."), b; try { b = c && unb64u(c); } catch (e) { b = null; }
+        if (!b || b.length < 85 + 16) return fail("That isn't a transfer code. Copy it from the other device again.");
+        var tid = b.slice(0, 8), epub = b.slice(8, 73), iv = b.slice(73, 85), ct = b.slice(85), rid = unb64u(st.rid), tids = b64u(tid), done = lsGet(KDONE) || [], keys;
+        if (done.indexOf(tids) !== -1) return fail("This transfer code was already used.");
+        return crypto.subtle.importKey("jwk", st.priv, EC, false, ["deriveBits"]).then(function (priv) { return keysFor(priv, epub, cat(rid, tid)); })
+          .then(function (k) { keys = k; return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv, additionalData: cat(rid, tid) }, keys.aes, ct); })
+          .then(function (pt) {
+            var o; try { o = JSON.parse(new TextDecoder().decode(pt)); } catch (e) { return fail("The transfer couldn't be read."); }
+            if (!o || o.tid !== tids || !validTransfer(o)) return fail("The transfer didn't pass its safety checks. Nothing was imported.");
+            if (!applyTransfer(o)) return fail("The progress couldn't be saved in this browser. Nothing was imported.");
+            return receipt(keys, rid, tid);
+          }, function () { return fail("This code wasn't made for this device, or it was damaged. Nothing was imported."); })
+          .then(function (mac) {
+            var rc = "MQ1C." + b64u(cat(tid, mac)); done.push(tids); lsSet(KDONE, done.slice(-50)); lsDel(KRCV); lsSet(KRCPT, { code: rc, ts: Date.now() });
+            return rc;
+          });
+      },
+      // Sending device: the receipt proves the other device imported it, so this device is erased.
+      confirm: function (rc) {
+        var st = lsGet(KSND); if (!st) return fail("No transfer is waiting on this device.");
+        var c = clean(rc, "MQ1C."), b; try { b = c && unb64u(c); } catch (e) { b = null; }
+        if (!b || b.length !== 20) return fail("That isn't a receipt code.");
+        if (!same(b.slice(0, 8), unb64u(st.tid)) || !same(b.slice(8), unb64u(st.rcpt))) return fail("That receipt doesn't match this transfer.");
+        if (!st.wiped) wipeProgress();
+        lsDel(KSND); return Promise.resolve(true);
+      },
+      // Sending device gives up on waiting: erase now; the transfer code stays so the other device can still import it once.
+      abandon: function () { var st = lsGet(KSND); if (!st) return false; wipeProgress(); st.wiped = true; lsSet(KSND, st); return true; },
+      clearWiped: function () { var st = lsGet(KSND); if (st && st.wiped) lsDel(KSND); }
+    };
+  })();
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
   function seedRand(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 10000) / 10000; }; }
   // Illustrated poster art for the main series (original drawings: props, places and symbols only).
@@ -2603,6 +2773,7 @@ select.chin { appearance: auto; }
   function show(id) { ["hub", "intro", "quiz", "result", "stats"].forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo(0, 0); }
 
   function begin() {
+    if (XF.locked()) { if (xferOpenSend) xferOpenSend(); return; }
     var el = document.documentElement;
     if (el.requestFullscreen) el.requestFullscreen().then(function () { FS = true; }).catch(function () {});
     var c = $("count"), seq = ["3", "2", "1", "Go"], i = 0;
@@ -2617,6 +2788,7 @@ select.chin { appearance: auto; }
   }
 
   function start() {
+    if (XF.locked()) { if (xferOpenSend) xferOpenSend(); return; }
     if (!(window.crypto && crypto.subtle)) { alert("This quiz needs a secure (https) connection to check answers."); return; }
     RNG = (CH && CH.run) ? mulberry(CH.seed) : null; // challenge runs use a shared seed so both players get the same questions
     // Draw NQ questions from the pool, starting with credits questions from distinct episodes.
@@ -3039,7 +3211,7 @@ select.chin { appearance: auto; }
   (function () {
     var box = $("badgesDlg"), panel = box.querySelector(".vcard"), title = $("badgesTitle"), last = null;
     function open() {
-      renderBadges(); $("impBox").value = ""; $("saveMsg").textContent = ""; box.hidden = false; SFX.pick();
+      renderBadges(); xNote(); box.hidden = false; SFX.pick();
       panel.scrollTop = 0; window.scrollTo(0, 0); title.focus();
       requestAnimationFrame(function () { panel.scrollTop = 0; window.scrollTo(0, 0); });
     }
@@ -3048,16 +3220,69 @@ select.chin { appearance: auto; }
     $("badgesClose").addEventListener("click", close);
     box.addEventListener("click", function (e) { if (e.target === box) close(); });
     document.addEventListener("keydown", function (e) { if (!box.hidden && e.key === "Escape") close(); });
-    $("expBtn").addEventListener("click", function () {
-      var c = exportCode(), ib = $("impBox"); ib.value = c; ib.focus(); ib.select();
-      var done = function (ok) { $("saveMsg").textContent = ok ? "Copied. Paste it on your other device." : "Select the code above and copy it."; };
-      try { navigator.clipboard.writeText(c).then(function () { done(true); }, function () { done(false); }); } catch (x) { done(false); }
+  })();
+
+  function xNote() { var n = $("xferNote"); if (n) n.textContent = XF.locked() ? "A transfer is waiting for confirmation." : ""; }
+  var xferOpenSend = null;
+  (function () {
+    var box = $("xferDlg"), panel = box.querySelector(".vcard"), last = null, msg = $("xMsg");
+    function say(t, bad) { msg.textContent = t || ""; msg.className = "fine" + (bad ? " bad" : ""); }
+    function tab(which) {
+      $("xtRecv").classList.toggle("on", which === "r"); $("xtSend").classList.toggle("on", which === "s");
+      $("xpRecv").hidden = which !== "r"; $("xpSend").hidden = which !== "s"; say("");
+    }
+    function copy(id, label) {
+      var t = $(id); t.focus(); t.select();
+      try { navigator.clipboard.writeText(t.value).then(function () { say(label + " copied."); }, function () { say("Select the text and copy it."); }); } catch (x) { say("Select the text and copy it."); }
+    }
+    function render() {
+      var rq = XF.request(), rc = XF.lastReceipt(), sp = XF.pending();
+      $("xReqBox").hidden = !rq; $("xCancelReq").hidden = !rq; $("xMake").textContent = rq ? "Make a new receive code" : "Make receive code";
+      if (rq) $("xReq").value = rq.code;
+      $("xRcptBox").hidden = !rc; if (rc) $("xRcpt").value = rc.code;
+      var waiting = !!sp; $("xSendNew").hidden = waiting; $("xSendWait").hidden = !waiting;
+      if (sp) {
+        $("xOut").value = sp.code;
+        $("xWaitMsg").textContent = sp.wiped ? "This device has been erased. The transfer code below still works once on the receiving device." : "This device is locked. Copy the transfer code to the new device, import it there, then paste the receipt below.";
+        $("xAbandon").hidden = !!sp.wiped; $("xConfirm").textContent = sp.wiped ? "Done, clear this screen" : "Confirm and erase this device";
+      }
+      xNote();
+    }
+    function open(which) {
+      render(); tab(which || (XF.pending() ? "s" : "r")); box.hidden = false; panel.scrollTop = 0; $("xferTitle").focus();
+    }
+    function close() { box.hidden = true; try { if (!XF.pending() || !XF.locked()) XF.clearWiped(); } catch (e) {} renderBadges(); renderHub(); if (last && document.body.contains(last)) last.focus(); }
+    xferOpenSend = function () { last = null; open("s"); };
+    $("xferOpen").addEventListener("click", function () { last = $("xferOpen"); $("badgesDlg").hidden = true; open(); });
+    $("xferClose").addEventListener("click", function () { close(); });
+    box.addEventListener("click", function (e) { if (e.target === box) close(); });
+    document.addEventListener("keydown", function (e) { if (!box.hidden && e.key === "Escape") close(); });
+    $("xtRecv").addEventListener("click", function () { tab("r"); });
+    $("xtSend").addEventListener("click", function () { tab("s"); });
+    $("xMake").addEventListener("click", function () {
+      if (XF.request() && !window.confirm("Replace the current receive code? The old one will stop working.")) return;
+      XF.makeRequest().then(function () { render(); say("Receive code ready. Copy it to the old device."); }, function (e) { say(e.message, true); });
     });
-    $("impBtn").addEventListener("click", function () {
-      if (!window.confirm("Import and merge progress from this code? It may increase saved scores and counters. Save codes are reusable and are not limited to one device.")) return;
-      var ok = importCode($("impBox").value);
-      $("saveMsg").textContent = ok ? "Progress restored." : "That code is invalid or could not be saved. Nothing was imported if it failed validation.";
-      if (ok) { renderBadges(); renderHub(); }
+    $("xCancelReq").addEventListener("click", function () { XF.cancelRequest(); render(); say("Receive code cancelled."); });
+    $("xCopyReq").addEventListener("click", function () { copy("xReq", "Receive code"); });
+    $("xCopyOut").addEventListener("click", function () { copy("xOut", "Transfer code"); });
+    $("xCopyRcpt").addEventListener("click", function () { copy("xRcpt", "Receipt"); });
+    $("xImport").addEventListener("click", function () {
+      if (!window.confirm("Import this progress? It merges into this device and keeps the higher scores.")) return;
+      XF.importTransfer($("xIn").value).then(function () { $("xIn").value = ""; render(); renderHub(); say("Imported. Now copy the receipt to the old device."); }, function (e) { say(e.message, true); });
+    });
+    $("xEnc").addEventListener("click", function () {
+      if (!window.confirm("Lock this device and encrypt its progress for the other device? You can't play here until the new device confirms. After that, this device is erased.")) return;
+      XF.send($("xRq").value).then(function () { $("xRq").value = ""; render(); say("Locked. Copy the transfer code to the new device."); }, function (e) { say(e.message, true); });
+    });
+    $("xConfirm").addEventListener("click", function () {
+      var sp = XF.pending();
+      if (sp && sp.wiped) { XF.clearWiped(); render(); tab("s"); say("Cleared."); renderBadges(); renderHub(); return; }
+      XF.confirm($("xRc").value).then(function () { $("xRc").value = ""; render(); renderBadges(); renderHub(); say("Confirmed. This device has been erased."); }, function (e) { say(e.message, true); });
+    });
+    $("xAbandon").addEventListener("click", function () {
+      if (!window.confirm("Erase all progress on this device now, without a receipt? The transfer code will still work once on the other device, but if you lose it, the progress is gone.")) return;
+      XF.abandon(); render(); renderBadges(); renderHub(); say("This device was erased.");
     });
   })();
   (function () {
