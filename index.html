@@ -30,7 +30,7 @@ body { font-family: var(--body); font-size: 16px; line-height: 1.5; overflow-x: 
 
 #sky, #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 #sky { z-index: 0; will-change: transform; transform: translateZ(0); }
-#fx { z-index: 30; }
+#fx { z-index: 45; }
 .glowfield { position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(60% 50% at 85% 0%, rgba(60, 111, 216, .28), transparent 70%),
               radial-gradient(50% 40% at 0% 100%, rgba(240, 67, 79, .14), transparent 70%); }
@@ -756,8 +756,8 @@ body[data-quiz="mcu"] .glowfield { background: radial-gradient(60% 50% at 85% 0%
 #result[data-tier="fail"] { --tc: #f0434f; } #result[data-tier="mastered"] { --tc: #e4c06d; } #result[data-tier="perfect"] { --tc: #7fe8ff; }
 .rhero { position: relative; overflow: hidden; display: grid; gap: 18px; padding: 24px 26px 22px; border-radius: 24px; border: 1px solid color-mix(in srgb, var(--tc) 55%, var(--line)); background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--tc) 24%, transparent), transparent 62%), radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--tc) 12%, transparent), transparent 70%), var(--panel); box-shadow: 0 30px 80px -44px var(--tc); }
 .rhero::before { content: ""; position: absolute; right: -60px; top: -60px; width: 240px; height: 240px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--tc) 40%, transparent); box-shadow: 0 0 0 22px color-mix(in srgb, var(--tc) 6%, transparent), 0 0 0 52px color-mix(in srgb, var(--tc) 4%, transparent); pointer-events: none; }
-#result[data-tier="mastered"] .rhero::after, #result[data-tier="perfect"] .rhero::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.14) 48%, transparent 60%); background-size: 250% 100%; animation: rsheen 3.4s ease-in-out 1s infinite; }
-@keyframes rsheen { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+#result[data-tier="mastered"] .rhero::after, #result[data-tier="perfect"] .rhero::after { content: ""; position: absolute; top: -10%; bottom: -10%; left: 0; width: 38%; pointer-events: none; background: linear-gradient(100deg, transparent, rgba(255,255,255,.16) 50%, transparent); transform: translate3d(-140%,0,0) skewX(-18deg); animation: rsweep 4s cubic-bezier(.45,.05,.3,1) 1s infinite; will-change: transform; }
+@keyframes rsweep { 0% { transform: translate3d(-140%,0,0) skewX(-18deg); } 50%, 100% { transform: translate3d(380%,0,0) skewX(-18deg); } }
 .rhero-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
 .rtier { font: 600 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; color: #05070f; background: var(--tc); box-shadow: 0 0 22px -4px var(--tc); }
 .rhero-main { display: grid; grid-template-columns: auto 1fr auto; gap: 18px 26px; align-items: center; position: relative; z-index: 1; }
@@ -826,10 +826,10 @@ body[data-quiz="mcu"] .glowfield { background: radial-gradient(60% 50% at 85% 0%
 .review-lock div { display: grid; gap: 3px; } .review-lock b { font-size: 15px; } .review-lock span { color: var(--muted); font-size: 13px; line-height: 1.4; }
 
 @keyframes medalFade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes stampShine { 0%, 55% { background-position: 160% 0; } 100% { background-position: -60% 0; } }
+@keyframes stampShine { 0%, 45% { transform: translate3d(-160%,0,0) skewX(-20deg); } 100% { transform: translate3d(330%,0,0) skewX(-20deg); } }
 .rhero .stamp { position: relative; overflow: hidden; animation: none !important; transform: rotate(-7deg); }
-.rhero .stamp::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.55) 50%, transparent 62%) 160% 0 / 220% 100% no-repeat; mix-blend-mode: overlay; animation: stampShine 4.2s ease-in-out 1s infinite; }
-@media (prefers-reduced-motion: reduce) { .rhero .stamp::after { animation: none; } }
+.rhero .stamp::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; pointer-events: none; background: linear-gradient(100deg, transparent, rgba(255,255,255,.6) 50%, transparent); transform: translate3d(-160%,0,0) skewX(-20deg); animation: stampShine 3.2s cubic-bezier(.45,.05,.3,1) 1.2s infinite; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .rhero .stamp::after, .rhero::after { animation: none !important; } }
 
 .qa-promise { display: flex; gap: 16px; align-items: center; padding: 18px 20px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line)); background: radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--gold) 16%, transparent), transparent 65%), var(--panel); box-shadow: 0 0 36px -16px var(--gold); }
 .qa-ic { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }
@@ -1029,6 +1029,109 @@ select.chin { appearance: auto; }
 .xtab.on { color: var(--ink); border-color: rgba(228,192,109,.6); background: rgba(228,192,109,.12); }
 #xMsg { min-height: 1.2em; }
 #xMsg.bad { color: #ff8b92; }
+
+/* ===== perfect-score drama ===== */
+.prays { position: absolute; left: 50%; top: 50%; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; pointer-events: none; z-index: 0;
+  background: repeating-conic-gradient(from 0deg, rgba(127,232,255,.2) 0 5deg, transparent 5deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, rgba(0,0,0,.55) 22%, transparent 62%); mask-image: radial-gradient(circle, #000 0, rgba(0,0,0,.55) 22%, transparent 62%);
+  animation: praySpin 50s linear infinite, prayIn 1.6s ease 2.3s both; will-change: transform; }
+@keyframes praySpin { to { transform: rotate(360deg); } }
+@keyframes prayIn { from { opacity: 0; } to { opacity: 1; } }
+#result[data-tier="perfect"] .rhero { animation: perfPulse 3.2s ease-in-out 3s infinite; }
+@keyframes perfPulse { 0%, 100% { box-shadow: 0 0 40px -14px #7fe8ff; } 50% { box-shadow: 0 0 90px -10px #7fe8ff, 0 0 0 1px rgba(127,232,255,.5); } }
+.rhero .stamp.perfect { animation: stampSlam .6s cubic-bezier(.2,1.5,.35,1) 2.4s both !important; }
+@keyframes stampSlam { from { opacity: 0; transform: rotate(-7deg) scale(3.2); filter: blur(6px); } 60% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: rotate(-7deg) scale(1); } }
+#result.shake { animation: resShake .55s cubic-bezier(.3,.1,.3,1); }
+@keyframes resShake { 0%, 100% { transform: none; } 15% { transform: translate3d(-9px,5px,0); } 30% { transform: translate3d(8px,-6px,0); } 45% { transform: translate3d(-6px,-3px,0); } 60% { transform: translate3d(5px,4px,0); } 80% { transform: translate3d(-2px,1px,0); } }
+#perfFx { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; overflow: hidden; background: rgba(2,8,14,.9); animation: pfBg 3.1s ease forwards; cursor: pointer; }
+@keyframes pfBg { 0% { opacity: 0; } 8% { opacity: 1; } 78% { opacity: 1; } 100% { opacity: 0; } }
+#perfFx .pf-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, #fff 0, #bff4ff 18%, rgba(127,232,255,.5) 40%, transparent 70%); opacity: 0; animation: pfFlash 1s ease-out .35s both; }
+@keyframes pfFlash { 0% { opacity: 0; transform: scale(.4); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(2.2); } }
+#perfFx .pf-ring { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 2px solid #bff4ff; box-shadow: 0 0 40px #7fe8ff, inset 0 0 30px #7fe8ff; opacity: 0; animation: pfRing 1.5s cubic-bezier(.15,.7,.3,1) .35s both; }
+#perfFx .pf-ring.r2 { animation-delay: .6s; border-color: #e4c06d; box-shadow: 0 0 40px #e4c06d, inset 0 0 30px #e4c06d; }
+@keyframes pfRing { 0% { opacity: .95; transform: scale(.2); } 100% { opacity: 0; transform: scale(14); } }
+#perfFx .pf-bar { position: absolute; left: 0; right: 0; height: 14vh; background: #000; }
+#perfFx .pf-bar.t { top: 0; animation: barT .6s ease both; } #perfFx .pf-bar.b { bottom: 0; animation: barB .6s ease both; }
+@keyframes barT { from { transform: translate3d(0,-100%,0); } } @keyframes barB { from { transform: translate3d(0,100%,0); } }
+#perfFx .pf-txt { position: relative; text-align: center; padding: 0 16px; }
+#perfFx .pf-title { margin: 0; font: 800 clamp(48px, 15vw, 150px)/1 var(--display); text-transform: uppercase; color: #fff; text-shadow: 0 0 30px #7fe8ff, 0 0 80px #7fe8ff, 0 0 140px rgba(127,232,255,.6); animation: pfTitle 2.4s cubic-bezier(.12,.8,.2,1) .35s both; }
+@keyframes pfTitle { 0% { opacity: 0; letter-spacing: .6em; filter: blur(18px); transform: scale(1.4); } 28% { opacity: 1; filter: blur(0); } 100% { opacity: 1; letter-spacing: .04em; transform: scale(1); } }
+#perfFx .pf-sub { margin: 14px 0 0; font: 600 clamp(12px, 3.4vw, 20px) var(--mono); letter-spacing: .35em; text-transform: uppercase; color: #bff4ff; animation: pfSub 1.2s ease 1.1s both; }
+@keyframes pfSub { from { opacity: 0; transform: translate3d(0,14px,0); } to { opacity: 1; } }
+#perfFx .pf-st { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 3px #7fe8ff; opacity: 0; animation: pfSt 2s ease-out both; }
+@keyframes pfSt { 0% { opacity: 0; transform: translate3d(0,0,0) scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate3d(var(--dx),var(--dy),0) scale(1.1); } }
+/* ===== all-badges finale ===== */
+#legendFx { position: fixed; inset: 0; z-index: 41; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 50%, #1c1405 0, #07060a 70%); animation: lgIn .8s ease both; }
+@keyframes lgIn { from { opacity: 0; } }
+#legendFx.out { animation: lgOut .7s ease forwards; } @keyframes lgOut { to { opacity: 0; } }
+#legendFx .lg-rays { position: absolute; left: 50%; top: 50%; width: 1500px; height: 1500px; margin: -750px 0 0 -750px; background: repeating-conic-gradient(from 0deg, rgba(228,192,109,.22) 0 4deg, transparent 4deg 12deg); -webkit-mask-image: radial-gradient(circle, #000 0, transparent 60%); mask-image: radial-gradient(circle, #000 0, transparent 60%); opacity: 0; animation: praySpin 60s linear infinite, prayIn 1.4s ease 4.2s both; will-change: transform; }
+#legendFx .lg-orbit { position: absolute; left: 50%; top: 50%; width: 0; height: 0; animation: praySpin 9s linear infinite; }
+#legendFx .lg-orbit.fast { animation-duration: 3.5s; }
+#legendFx .lg-ic { position: absolute; width: 56px; height: 56px; margin: -28px 0 0 -28px; display: grid; place-items: center; border-radius: 50%; color: var(--badge-accent); background: radial-gradient(circle, var(--badge-glow), rgba(255,255,255,.03)); border: 1px solid var(--badge-accent); box-shadow: 0 0 20px -2px var(--badge-accent); opacity: 0; animation: lgIcIn .5s ease both; transform: translate3d(var(--x),var(--y),0); }
+#legendFx .lg-ic svg { width: 30px; height: 30px; animation: praySpinR 9s linear infinite; }
+@keyframes praySpinR { to { transform: rotate(-360deg); } }
+@keyframes lgIcIn { from { opacity: 0; } to { opacity: 1; } }
+#legendFx.conv .lg-ic { transition: transform 1s cubic-bezier(.6,0,.9,.4), opacity 1s ease; transform: translate3d(0,0,0) scale(.2); opacity: 0; }
+#legendFx .lg-core { position: relative; width: clamp(150px, 38vw, 230px); height: clamp(150px, 38vw, 230px); border-radius: 50%; display: grid; place-items: center; color: #ffe9a8; opacity: 0; background: radial-gradient(circle at 35% 30%, rgba(255,233,168,.55), rgba(228,192,109,.18) 55%, rgba(0,0,0,.2)); border: 2px solid #e4c06d; box-shadow: 0 0 60px #e4c06d, 0 0 160px rgba(228,192,109,.55), inset 0 0 40px rgba(255,233,168,.4); transform: scale(0); }
+#legendFx.core .lg-core { animation: lgCore 1.3s cubic-bezier(.2,1.6,.35,1) both, lgBeat 2.4s ease-in-out 1.4s infinite; }
+@keyframes lgCore { from { opacity: 0; transform: scale(0); } 40% { opacity: 1; } to { opacity: 1; transform: scale(1); } }
+@keyframes lgBeat { 0%, 100% { box-shadow: 0 0 60px #e4c06d, 0 0 160px rgba(228,192,109,.55), inset 0 0 40px rgba(255,233,168,.4); } 50% { box-shadow: 0 0 90px #ffe9a8, 0 0 220px rgba(228,192,109,.75), inset 0 0 60px rgba(255,233,168,.6); } }
+#legendFx .lg-core svg { width: 58%; height: 58%; filter: drop-shadow(0 0 18px #ffe9a8); stroke-width: 1.6; }
+#legendFx .lg-wave { position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; margin: -80px 0 0 -80px; border-radius: 50%; border: 3px solid #ffe9a8; box-shadow: 0 0 60px #e4c06d, inset 0 0 40px #e4c06d; opacity: 0; }
+#legendFx.core .lg-wave { animation: pfRing 2s cubic-bezier(.15,.7,.3,1) both; } #legendFx.core .lg-wave.w2 { animation-delay: .35s; } #legendFx.core .lg-wave.w3 { animation-delay: .7s; }
+#legendFx .lg-white { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+#legendFx.core .lg-white { animation: lgWhite 1.2s ease-out both; } @keyframes lgWhite { 0% { opacity: .95; } 100% { opacity: 0; } }
+#legendFx .lg-txt { position: absolute; left: 0; right: 0; bottom: 9vh; text-align: center; padding: 0 16px; display: grid; gap: 10px; justify-items: center; }
+#legendFx .lg-eye { font: 600 12px var(--mono); letter-spacing: .4em; text-transform: uppercase; color: #e4c06d; opacity: 0; }
+#legendFx .lg-title { margin: 0; font: 800 clamp(32px, 9vw, 86px)/1.02 var(--display); text-transform: uppercase; color: #ffe9a8; text-shadow: 0 0 30px rgba(228,192,109,.9), 0 0 90px rgba(228,192,109,.6); opacity: 0; }
+#legendFx .lg-sub { margin: 0; font: 500 clamp(13px, 3.4vw, 18px) var(--mono); letter-spacing: .12em; color: #f3e3b6; opacity: 0; }
+#legendFx .lg-btn { margin-top: 8px; opacity: 0; pointer-events: none; }
+#legendFx.core .lg-eye { animation: pfSub 1s ease .9s both; }
+#legendFx.core .lg-title { animation: pfTitle 2.2s cubic-bezier(.12,.8,.2,1) 1.1s both; }
+#legendFx.core .lg-sub { animation: pfSub 1s ease 2.2s both; }
+#legendFx.core .lg-btn { animation: pfSub 1s ease 4s both; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { #legendFx *, #perfFx * { animation-duration: .01s !important; animation-delay: 0s !important; } .prays { display: none; } }
+
+.xchoice { display: flex; gap: 14px; align-items: center; text-align: left; width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--line-hi, var(--line)); background: rgba(255,255,255,.04); color: var(--ink); cursor: pointer; font: inherit; }
+.xchoice:hover, .xchoice:focus-visible { border-color: #e4c06d; background: rgba(228,192,109,.1); }
+.xchoice i { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: rgba(228,192,109,.18); color: #e4c06d; font: 700 16px var(--mono); font-style: normal; }
+.xchoice span { display: grid; gap: 3px; } .xchoice b { font-size: 16px; } .xchoice em { font-style: normal; font-size: 13px; color: var(--muted); }
+.xdots { display: flex; gap: 6px; } .xdots i { flex: 1; height: 5px; border-radius: 3px; background: rgba(255,255,255,.12); } .xdots i.on { background: #e4c06d; }
+.xfer h3 { margin: 0; font-size: 19px; }
+.xacts { display: grid; gap: 8px; } .xacts .btn { width: 100%; justify-content: center; padding: 14px; font-size: 16px; }
+.xacts .xlink { background: none; border: 0; color: var(--muted); text-decoration: underline; font: 13px var(--ui, inherit); cursor: pointer; padding: 6px; }
+.xfoot { display: flex; gap: 8px; justify-content: space-between; }
+.xfer #xHome, .xfer #xFlow { display: grid; gap: 12px; }
+.xfer textarea { min-height: 96px; font-size: 13px; }
+
+/* ===== perfect (upgraded) + mastered ===== */
+#perfFx { background: radial-gradient(ellipse at 50% 50%, rgba(8,28,40,.92), rgba(1,5,9,.97) 75%); }
+#perfFx .pf-title { background: linear-gradient(100deg, #fff 0%, #bff4ff 25%, #a58bff 45%, #ff9ad5 55%, #7fe8ff 70%, #fff 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 0 22px rgba(127,232,255,.9)) drop-shadow(0 0 70px rgba(127,232,255,.6)); animation: pfTitle 2.6s cubic-bezier(.12,.8,.2,1) .35s both, pfPrism 2.6s linear .35s both; }
+@keyframes pfPrism { from { background-position: 100% 0; } to { background-position: 0 0; } }
+#perfFx .pf-beam { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: linear-gradient(#0000, #fff 30%, #fff 70%, #0000); box-shadow: 0 0 40px 12px #7fe8ff; transform: scaleY(0); opacity: 0; animation: pfBeam 1.3s cubic-bezier(.2,.8,.2,1) .15s both; }
+@keyframes pfBeam { 0% { transform: scaleY(0); opacity: 1; } 35% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1) scaleX(30); opacity: 0; } }
+#perfFx .pf-streak { position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; background: linear-gradient(90deg, transparent, #fff 50%, transparent); box-shadow: 0 0 30px 6px #7fe8ff; transform: scaleX(0); opacity: 0; animation: pfStreak 1.5s cubic-bezier(.2,.8,.2,1) .5s both; }
+@keyframes pfStreak { 0% { transform: scaleX(0); opacity: 1; } 40% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1.2); opacity: 0; } }
+#perfFx .pf-ring.r3 { animation-delay: .85s; border-color: #a58bff; box-shadow: 0 0 40px #a58bff, inset 0 0 30px #a58bff; }
+#perfFx .pf-shard { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: linear-gradient(135deg, #fff, #7fe8ff 55%, #a58bff); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); opacity: 0; animation: pfShard 1.9s cubic-bezier(.1,.7,.3,1) both; }
+@keyframes pfShard { 0% { opacity: 0; transform: translate3d(0,0,0) rotate(0) scale(.2); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate3d(var(--dx),var(--dy),0) rotate(var(--r)) scale(var(--s)); } }
+#perfFx .pf-score { margin-top: 14px; font: 800 clamp(26px, 7vw, 54px) var(--mono); color: #fff; letter-spacing: .1em; filter: drop-shadow(0 0 18px #7fe8ff); opacity: 0; animation: pfSub .8s ease .8s both; }
+#perfFx.gold { background: radial-gradient(ellipse at 50% 50%, rgba(40,28,6,.92), rgba(8,5,1,.97) 75%); }
+#perfFx.gold .pf-flash { background: radial-gradient(circle, #fff 0, #fff1bb 18%, rgba(228,192,109,.55) 40%, transparent 70%); }
+#perfFx.gold .pf-beam { box-shadow: 0 0 40px 12px #e4c06d; } #perfFx.gold .pf-streak { box-shadow: 0 0 30px 6px #e4c06d; }
+#perfFx.gold .pf-ring { border-color: #fff1bb; box-shadow: 0 0 40px #e4c06d, inset 0 0 30px #e4c06d; } #perfFx.gold .pf-ring.r2 { border-color: #c9972b; box-shadow: 0 0 40px #c9972b, inset 0 0 30px #c9972b; }
+#perfFx.gold .pf-st { box-shadow: 0 0 12px 3px #e4c06d; }
+#perfFx.gold .pf-title { background: linear-gradient(100deg, #8a6417 0%, #e4c06d 22%, #fff7d1 40%, #e4c06d 58%, #b8832b 78%, #fff1bb 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(228,192,109,.9)) drop-shadow(0 0 60px rgba(228,192,109,.55)); font-size: clamp(42px, 13vw, 128px); }
+#perfFx.gold .pf-sub { color: #f3d98e; }
+#perfFx .pf-medal { width: clamp(96px, 22vw, 150px); height: clamp(96px, 22vw, 150px); margin: 0 auto 14px; color: #e4c06d; filter: drop-shadow(0 0 28px rgba(228,192,109,.9)); animation: pfMedal 1.2s cubic-bezier(.2,1.5,.35,1) .3s both; }
+#perfFx .pf-medal svg { width: 100%; height: 100%; display: block; overflow: visible; }
+@keyframes pfMedal { from { opacity: 0; transform: scale(0) rotate(-40deg); } to { opacity: 1; transform: none; } }
+#perfFx .pf-ember { position: absolute; bottom: 8vh; width: 6px; height: 6px; border-radius: 50%; background: #ffe08a; box-shadow: 0 0 10px 3px #e4c06d; opacity: 0; animation: pfEmber 2s ease-out both; }
+@keyframes pfEmber { 0% { opacity: 0; transform: translate3d(0,0,0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate3d(var(--dx),var(--dy),0) scale(.4); } }
+.prays.gold { background: repeating-conic-gradient(from 0deg, rgba(228,192,109,.2) 0 5deg, transparent 5deg 15deg); animation: praySpin 50s linear infinite, prayIn 1.4s ease 1.7s both; }
+#result[data-tier="mastered"] .rhero { animation: goldPulse 3.2s ease-in-out 2.4s infinite; }
+@keyframes goldPulse { 0%, 100% { box-shadow: 0 0 40px -14px #e4c06d; } 50% { box-shadow: 0 0 90px -10px #e4c06d, 0 0 0 1px rgba(228,192,109,.5); } }
+.rhero .stamp.mastered { animation: stampSlam .6s cubic-bezier(.2,1.5,.35,1) 1.8s both !important; }
 </style>
 </head>
 <body>
@@ -1220,8 +1323,8 @@ select.chin { appearance: auto; }
     <div class="eyebrow">Your progress</div>
     <h2 id="badgesTitle" tabindex="-1">Badges</h2>
     <p class="bmeta" id="badgesMeta"></p>
-    <div class="badge-progress" role="progressbar" aria-label="Badges earned" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="badgeProgress">
-      <span>Mission archive</span><b id="badgeProgressText">0 / 20</b><div class="badge-track" aria-hidden="true"><i id="badgeProgressFill"></i></div>
+    <div class="badge-progress" role="progressbar" aria-label="Badges earned" aria-valuemin="0" aria-valuemax="21" aria-valuenow="0" id="badgeProgress">
+      <span>Mission archive</span><b id="badgeProgressText">0 / 21</b><div class="badge-track" aria-hidden="true"><i id="badgeProgressFill"></i></div>
     </div>
     <div class="bgroups" id="badgesGrid"></div>
     <div class="bsave">
@@ -1317,44 +1420,21 @@ select.chin { appearance: auto; }
 <div class="veil" id="xferDlg" hidden role="dialog" aria-modal="true" aria-labelledby="xferTitle">
   <div class="vcard glass xfer">
     <div class="eyebrow">One-time secure transfer</div>
-    <h2 id="xferTitle" tabindex="-1">Move your progress</h2>
-    <div class="xtabs" role="tablist">
-      <button type="button" class="xtab on" id="xtRecv" role="tab">Receive here</button>
-      <button type="button" class="xtab" id="xtSend" role="tab">Send from here</button>
+    <h2 id="xferTitle" tabindex="-1">Transfer progress</h2>
+    <div id="xHome">
+      <p class="bmeta">Move all your progress to another device. Once the new device confirms, this one is erased, so nobody can use a copy.</p>
+      <button type="button" class="xchoice" id="xGoRecv"><i>1</i><span><b>Get progress on this device</b><em>Use this on the NEW device.</em></span></button>
+      <button type="button" class="xchoice" id="xGoSend"><i>2</i><span><b>Send progress from this device</b><em>Use this on the OLD device. It gets erased at the end.</em></span></button>
     </div>
-    <div id="xpRecv">
-      <p class="bmeta">On the device that should <b>get</b> the progress: make a receive code, then copy it to the old device.</p>
-      <div class="row"><button class="btn ghost" id="xMake" type="button">Make receive code</button><button class="btn ghost" id="xCancelReq" type="button" hidden>Cancel</button></div>
-      <div id="xReqBox" hidden>
-        <textarea id="xReq" data-ok="1" readonly spellcheck="false"></textarea>
-        <div class="row"><button class="btn ghost" id="xCopyReq" type="button">Copy</button><span class="fine">Valid for 30 minutes, works once, only on this device.</span></div>
-        <p class="bmeta">Then paste the transfer code the old device gives you:</p>
-        <textarea id="xIn" data-ok="1" spellcheck="false" placeholder="Paste transfer code (starts with MQ1T.)"></textarea>
-        <div class="row"><button class="btn" id="xImport" type="button">Import</button></div>
-      </div>
-      <div id="xRcptBox" hidden>
-        <p class="bmeta"><b>Imported.</b> Copy this receipt to the old device so it can erase itself:</p>
-        <textarea id="xRcpt" data-ok="1" readonly spellcheck="false"></textarea>
-        <div class="row"><button class="btn ghost" id="xCopyRcpt" type="button">Copy receipt</button></div>
-      </div>
-    </div>
-    <div id="xpSend" hidden>
-      <div id="xSendNew">
-        <p class="bmeta">On the device that <b>has</b> the progress: paste the receive code from the new device. Your progress is encrypted so only that device can read it. This device is locked until the new device confirms, then it is erased.</p>
-        <textarea id="xRq" data-ok="1" spellcheck="false" placeholder="Paste receive code (starts with MQ1R.)"></textarea>
-        <div class="row"><button class="btn" id="xEnc" type="button">Encrypt and lock this device</button></div>
-      </div>
-      <div id="xSendWait" hidden>
-        <p class="bmeta" id="xWaitMsg"></p>
-        <textarea id="xOut" data-ok="1" readonly spellcheck="false"></textarea>
-        <div class="row"><button class="btn ghost" id="xCopyOut" type="button">Copy transfer code</button></div>
-        <p class="bmeta">After importing, the new device shows a receipt. Paste it here:</p>
-        <textarea id="xRc" data-ok="1" spellcheck="false" placeholder="Paste receipt (starts with MQ1C.)"></textarea>
-        <div class="row"><button class="btn" id="xConfirm" type="button">Confirm and erase this device</button><button class="btn ghost" id="xAbandon" type="button">Erase without confirming</button></div>
-      </div>
+    <div id="xFlow" hidden>
+      <div class="xdots" id="xDots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h3 id="xStepTitle"></h3>
+      <p class="bmeta" id="xStepText"></p>
+      <textarea id="xBox" data-ok="1" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+      <div class="xacts" id="xActs"></div>
     </div>
     <p class="fine" id="xMsg" role="status"></p>
-    <div class="row"><button class="btn" id="xferClose" type="button">Close</button></div>
+    <div class="xfoot"><button class="btn ghost" id="xBack" type="button" hidden>Back</button><button class="btn" id="xferClose" type="button">Close</button></div>
   </div>
 </div>
 
@@ -1797,7 +1877,7 @@ select.chin { appearance: auto; }
     ser3: ["#83b8ff", "rgba(131,184,255,.2)"], serall: ["#73e0cf", "rgba(115,224,207,.2)"],
     mov3: ["#ff8f70", "rgba(255,143,112,.2)"], movall: ["#ff77a8", "rgba(255,119,168,.2)"],
     doom: ["#c4a1ff", "rgba(196,161,255,.2)"], doomhard: ["#ff8066", "rgba(255,128,102,.2)"],
-    clean: ["#fff08a", "rgba(255,240,138,.2)"], clean10: ["#e9c2ff", "rgba(233,194,255,.2)"],
+    legend: ["#ffe9a8", "rgba(255,233,168,.28)"], clean: ["#fff08a", "rgba(255,240,138,.2)"], clean10: ["#e9c2ff", "rgba(233,194,255,.2)"],
     fast: ["#ffe36e", "rgba(255,227,110,.2)"], plays10: ["#ff82b2", "rgba(255,130,178,.2)"],
     master1: ["#e4c06d", "rgba(228,192,109,.22)"], masterhard: ["#ff9f43", "rgba(255,159,67,.22)"], master10: ["#7fe8ff", "rgba(127,232,255,.2)"],
     master3: ["#ffca73", "rgba(255,202,115,.2)"], all: ["#f5e6a8", "rgba(245,230,168,.2)"]
@@ -1825,7 +1905,8 @@ select.chin { appearance: auto; }
     fast: '<path d="m27 3-17 24h12l-2 18 18-26H26z"/><path d="M5 11h8M3 19h7M36 7h7"/>',
     plays10: '<path d="M24 41S7 31 7 18a9 9 0 0 1 17-4 9 9 0 0 1 17 4c0 13-17 23-17 23z"/><path d="m18 24 4 4 9-10"/>',
     master3: '<path d="M16 5h16v9c0 9-3 14-8 17-5-3-8-8-8-17z"/><path d="M16 10H8v5c0 6 4 9 11 10m13-15h8v5c0 6-4 9-11 10M24 31v8m-8 5h16m-13-5h10"/>',
-    all: '<path d="m5 15 10 4 9-13 9 13 10-4-5 24H10z"/><path d="M15 29h18M17 36h14"/><circle cx="24" cy="15" r="3" fill="currentColor"/>'
+    all: '<path d="m5 15 10 4 9-13 9 13 10-4-5 24H10z"/><path d="M15 29h18M17 36h14"/><circle cx="24" cy="15" r="3" fill="currentColor"/>',
+    legend: '<path d="M24 3 29 17l15 1-11.5 9.5L36.5 42 24 34 11.5 42l4-14.5L4 18l15-1z"/><circle cx="24" cy="24" r="5"/><path d="M24 8v4m0 24v4M8 24h4m24 0h4"/>'
   };
   var BADGE_OFF = {"masterhard": [0, -1], "master10": [0, -1], "perf": [0, 0.8], "hard5": [0, -1], "movall": [0, -1.81], "doomhard": [0, -2], "clean": [0, 1.25], "clean10": [0, -1.5], "fast": [1, 0], "plays10": [0, -1.06], "master3": [0, -0.5], "all": [0, 1.5]};
   function badgeSvg(id) {
@@ -1856,7 +1937,8 @@ select.chin { appearance: auto; }
     { id: "fast", ic: "↑", n: "Speed Runner", d: "Pass with at least half the clock left.", t: function (p) { return p.fast >= 1; } },
     { id: "master10", ic: "♚", n: "Grandmaster", d: "Master 10 different quizzes.", t: function (p) { return masteredIds(p).length >= 10; } },
     { id: "master3", ic: "❦", n: "Triple Mastery", d: "Master 3 different quizzes (90%+). Unlocks the MCU Gauntlet.", t: function (p) { return masteredIds(p).length >= 3; } },
-    { id: "all", ic: "♔", n: "Completionist", d: "Pass every quiz in the hub.", t: function (p) { return passedIds(p).length === ALL.length; } }
+    { id: "all", ic: "♔", n: "Completionist", d: "Pass every quiz in the hub.", t: function (p) { return passedIds(p).length === ALL.length; } },
+    { id: "legend", ic: "✺", n: "Hall of Legends", d: "Earn every other badge.", t: function (p) { return BADGES.every(function (b) { return b.id === "legend" || !!p.badges[b.id] || b.t(p); }); } }
   ];
   function recordRun(id, level, score, n, pass, strikes, used, limit) {
     var p = loadP(), key = id + "|" + level;
@@ -1877,9 +1959,9 @@ select.chin { appearance: auto; }
     { n: "Collections", d: "Clear whole sets of quizzes.", ids: ["ser3", "mov3", "doom", "serall", "movall"] },
     { n: "Scores & mastery", d: "Chase the top marks.", ids: ["perf", "master1", "master3", "master10"] },
     { n: "Hard mode", d: "For people who like it difficult.", ids: ["hard", "four", "doomhard", "hard5", "masterhard", "hardperf"] },
-    { n: "Ultimate", d: "The final goal.", ids: ["all"] }
+    { n: "Ultimate", d: "The final goals.", ids: ["all", "legend"] }
   ];
-  var BADGE_DIF = { first: 1, pass: 1, clean: 2, fast: 2, ser3: 1, mov3: 1, doom: 2, serall: 3, movall: 3, perf: 2, master1: 2, master3: 3, master10: 4, hard: 2, four: 2, hard5: 3, hardperf: 4, masterhard: 3, doomhard: 3, all: 4 };
+  var BADGE_DIF = { first: 1, pass: 1, clean: 2, fast: 2, ser3: 1, mov3: 1, doom: 2, serall: 3, movall: 3, perf: 2, master1: 2, master3: 3, master10: 4, hard: 2, four: 2, hard5: 3, hardperf: 4, masterhard: 3, doomhard: 3, all: 4, legend: 4 };
   var DIF_NAME = { 1: "Easy", 2: "Medium", 3: "Hard", 4: "Elite" };
   // Exact unlock rules + live progress for each badge (shown when a badge is tapped).
   var RUN = "Only whole-quiz runs count. Runs on a single film never count toward this badge.";
@@ -1905,6 +1987,7 @@ select.chin { appearance: auto; }
     fast: { r: ["Pass a quiz with at least half of the clock still left when you finish.", "On a 30-question quiz you have 8:00, so finish and pass with 4:00 or more remaining.", RUN], pg: function (p) { return [Math.min(p.fast, 1), 1, "speedy pass"]; } },
     master10: { r: ["Master 10 different quizzes (90% or more on each, at any level).", "Mastering the same quiz on two levels only counts once.", RUN], pg: function (p) { return [Math.min(masteredIds(p).length, 10), 10, "quizzes mastered"]; } },
     master3: { r: ["Master 3 different quizzes (90% or more on each, at any level).", "Mastering the same quiz on two levels only counts once.", "Unlocks the MCU Gauntlet.", RUN], pg: function (p) { return [Math.min(masteredIds(p).length, 3), 3, "quizzes mastered"]; } },
+    legend: { r: ["Earn every other badge in the hub.", "It unlocks the moment your last badge lands, and plays a special finale.", RUN], pg: function (p) { var o = BADGES.filter(function (b) { return b.id !== "legend"; }), n = 0; o.forEach(function (b) { if (p.badges[b.id] || b.t(p)) n++; }); return [n, o.length, "other badges earned"]; } },
     all: { r: ["Pass every single quiz in the hub at least once (any level), including the specials and the MCU Gauntlet.", PASSR, RUN], pg: function (p) { return [passedIds(p).length, ALL.length, "quizzes passed"]; } }
   };
   var bdOpen = null;
@@ -2025,6 +2108,7 @@ select.chin { appearance: auto; }
     Object.keys(inc.perf || {}).forEach(function (kk) { cur.perf[kk] = 1; });
     Object.keys(inc.badges || {}).forEach(function (kk) { if (!cur.badges[kk]) cur.badges[kk] = inc.badges[kk]; });
     ["plays", "clean", "fast"].forEach(function (k) { cur[k] = Math.max(cur[k] || 0, inc[k] || 0); });
+    var nowB = Date.now(); BADGES.forEach(function (b) { if (!cur.badges[b.id] && b.t(cur)) cur.badges[b.id] = nowB; });
     if (!saveP(cur)) return false;
     try {
       Object.keys(o.best).forEach(function (id) {
@@ -2045,6 +2129,30 @@ select.chin { appearance: auto; }
   // One-time, device-bound progress transfer. The receiving device makes a key pair and keeps the private half; the sending
   // device encrypts to the public half, so a copied transfer code is useless anywhere else. The receiving device deletes its key
   // after one successful import, and the sending device only erases itself once it is shown a receipt only the receiver could make.
+
+  var LEGACY_BADGES = ["mixed", "clean10", "plays10", "plays50"];
+  function sanitizeTransfer(o) {
+    if (!isRecord(o)) return o;
+    var okB = BADGES.map(function (b) { return b.id; }).concat(LEGACY_BADGES);
+    function keyId(k) { var i = k.lastIndexOf("|"); return i > 0 ? k.slice(0, i) : k; }
+    if (isRecord(o.p)) {
+      if (isRecord(o.p.badges)) Object.keys(o.p.badges).forEach(function (k) { if (okB.indexOf(k) === -1) delete o.p.badges[k]; });
+      ["pass", "perf"].forEach(function (f) { if (isRecord(o.p[f])) Object.keys(o.p[f]).forEach(function (k) { var q = quizForId(keyId(k)); if (!q) delete o.p[f][k]; else if (f === "pass" && typeof o.p[f][k] === "number") o.p[f][k] = Math.min(o.p[f][k], q.count || 30); }); });
+    }
+    ["best", "att"].forEach(function (f) { if (isRecord(o[f])) Object.keys(o[f]).forEach(function (k) { if (!quizForId(k)) delete o[f][k]; }); });
+    if (isRecord(o.fbest)) Object.keys(o.fbest).forEach(function (k) { if (!quizForId(keyId(k))) delete o.fbest[k]; });
+    return o;
+  }
+  function whyBad(o) {
+    if (!isRecord(o)) return "unreadable data";
+    if (o.v !== 2) return "unsupported version";
+    if (!onlyKeys(o, ["v", "p", "best", "fbest", "att", "tid", "ts"])) return "unexpected fields";
+    if (!validProgress(o.p)) return "progress block";
+    if (!isRecord(o.best) || !Object.keys(o.best).every(function (id) { var q = quizForId(id); return !!q && validBest(o.best[id], q); })) return "best scores";
+    if (!validFbest(o.fbest)) return "film scores";
+    if (!isRecord(o.att)) return "attempt counts";
+    return "attempt counts";
+  }
   var XF = (function () {
     var enc = new TextEncoder(), KRCV = "mcu-xfer-rcv", KSND = "mcu-xfer-snd", KDONE = "mcu-xfer-done", KRCPT = "mcu-xfer-rcpt", REQ_TTL = 30 * 60;
     var EC = { name: "ECDH", namedCurve: "P-256" };
@@ -2118,7 +2226,9 @@ select.chin { appearance: auto; }
           .then(function (k) { keys = k; return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv, additionalData: cat(rid, tid) }, keys.aes, ct); })
           .then(function (pt) {
             var o; try { o = JSON.parse(new TextDecoder().decode(pt)); } catch (e) { return fail("The transfer couldn't be read."); }
-            if (!o || o.tid !== tids || !validTransfer(o)) return fail("The transfer didn't pass its safety checks. Nothing was imported.");
+            o = sanitizeTransfer(o);
+            if (!o || o.tid !== tids) return fail("The transfer didn't match this request. Nothing was imported.");
+            if (!validTransfer(o)) return fail("The transfer didn't pass its safety checks (" + whyBad(o) + "). Make sure both devices are on the latest version of the site, then try again. Nothing was imported.");
             if (!applyTransfer(o)) return fail("The progress couldn't be saved in this browser. Nothing was imported.");
             return receipt(keys, rid, tid);
           }, function () { return fail("This code wasn't made for this device, or it was damaged. Nothing was imported."); })
@@ -2531,7 +2641,7 @@ select.chin { appearance: auto; }
     soon.innerHTML = '<div style="display:grid;gap:8px"><span class="meta">Coming later</span><span style="color:var(--muted)">More series and movies can be added to the hub.</span></div>';
     boxM.appendChild(soon);
     $("cntSeries").textContent = nS + " quizzes"; $("cntMovies").textContent = nM + " quizzes";
-    $("hubStats").innerHTML = "<span><b>" + ALL.length + "</b> quizzes</span><span><b>" + totalQ.toLocaleString("en-US") + "</b> in the question pool</span><span><b>4</b> levels each</span><button type=\"button\" class=\"bdgbtn\" id=\"sourcesBtn\">Sources</button><button type=\"button\" class=\"bdgbtn\" id=\"statsBtn\">Stats</button><button type=\"button\" class=\"bdgbtn\" id=\"badgesBtn\">Badges <b>" + badgeCount() + "/" + BADGES.length + "</b></button><button type=\"button\" class=\"bdgbtn\" id=\"chBtn\">Versus</button>";
+    $("hubStats").innerHTML = "<span><b>" + ALL.length + "</b> quizzes</span><span><b>" + totalQ.toLocaleString("en-US") + "</b> in the question pool</span><span><b>4</b> levels each</span><button type=\"button\" class=\"bdgbtn\" id=\"sourcesBtn\">Sources</button><button type=\"button\" class=\"bdgbtn\" id=\"statsBtn\">Stats</button><button type=\"button\" class=\"bdgbtn\" id=\"badgesBtn\">Badges <b>" + badgeCount() + "/" + BADGES.length + "</b></button><button type=\"button\" class=\"bdgbtn\" id=\"chBtn\">Versus</button><button type=\"button\" class=\"bdgbtn\" id=\"xferBtn\">Transfer</button>";
     renderBestRun(); renderBadgeBanner();
   }
   function renderBadgeBanner() {
@@ -3180,6 +3290,11 @@ select.chin { appearance: auto; }
       rb.appendChild(nb);
     } else rb.hidden = true;
     show("result");
+    var rh = document.querySelector("#result .rhero");
+    if (rh) { var oldR = rh.querySelector(".prays"); if (oldR) oldR.remove(); if (tier === "perfect" || tier === "mastered") { var rd = document.createElement("div"); rd.className = "prays" + (tier === "mastered" ? " gold" : ""); rd.setAttribute("aria-hidden", "true"); rh.insertBefore(rd, rh.firstChild); } }
+    if (pass && (tier === "perfect" || tier === "mastered")) perfectCinematic(tier, score, NQ);
+    var legendNow = fresh.some(function (b) { return b.id === "legend"; });
+    if (legendNow) setTimeout(legendFinale, tier === "perfect" ? 4200 : tier === "mastered" ? 3000 : 1800);
     if (fresh.length) { setTimeout(confetti, 220); setTimeout(SFX.badge, 220); }
     if (pass && (tier === "mastered" || tier === "perfect")) {
       var GOLD = tier === "perfect" ? ["#7fe8ff", "#bff4ff", "#ffffff", "#e4c06d", "#a58bff"] : ["#e4c06d", "#f3d98e", "#fff1bb", "#ffffff", "#c9972b"];
@@ -3187,6 +3302,54 @@ select.chin { appearance: auto; }
       if (tier === "perfect") setTimeout(function () { confetti(GOLD, 200); }, 1700);
       setTimeout(SFX.master, 500);
     } else if (pass) { if (!fresh.length) setTimeout(confetti, 900); setTimeout(SFX.pass, 500); } else { pop($("vig"), "flash"); setTimeout(SFX.fail, 500); }
+  }
+
+
+  // ---------- cinematic effects ----------
+  function perfectCinematic(tier, score, n) {
+    if (REDUCE) return;
+    tier = tier || "perfect"; var gold = tier === "mastered", total = gold ? 2700 : 3900;
+    var old = $("perfFx"); if (old) old.remove();
+    var f = document.createElement("div"); f.id = "perfFx"; f.className = gold ? "gold" : ""; f.setAttribute("aria-hidden", "true"); f.style.animationDuration = total + "ms";
+    var W = Math.min(window.innerWidth, 1000), h = '<div class="pf-flash"></div><div class="pf-beam"></div><div class="pf-streak"></div><div class="pf-ring"></div><div class="pf-ring r2"></div>' + (gold ? "" : '<div class="pf-ring r3"></div>') + '<div class="pf-bar t"></div><div class="pf-bar b"></div>';
+    var i, a, d;
+    for (i = 0; i < (gold ? 34 : 54); i++) { a = Math.random() * 6.283; d = 120 + Math.random() * W * .55;
+      h += '<i class="pf-st" style="left:50%;top:50%;--dx:' + Math.round(Math.cos(a) * d) + 'px;--dy:' + Math.round(Math.sin(a) * d) + 'px;animation-delay:' + (.35 + Math.random() * .9).toFixed(2) + 's"></i>'; }
+    if (gold) for (i = 0; i < 26; i++) h += '<i class="pf-ember" style="left:' + Math.round(Math.random() * 100) + '%;--dy:' + -Math.round(160 + Math.random() * 380) + 'px;--dx:' + Math.round((Math.random() - .5) * 140) + 'px;animation-delay:' + (.4 + Math.random() * 1.2).toFixed(2) + 's"></i>';
+    else for (i = 0; i < 22; i++) { a = Math.random() * 6.283; d = 160 + Math.random() * W * .5;
+      h += '<i class="pf-shard" style="--dx:' + Math.round(Math.cos(a) * d) + 'px;--dy:' + Math.round(Math.sin(a) * d) + 'px;--r:' + Math.round(Math.random() * 720 - 360) + 'deg;--s:' + (.6 + Math.random() * 1.4).toFixed(2) + ';animation-delay:' + (.4 + Math.random() * .5).toFixed(2) + 's"></i>'; }
+    h += '<div class="pf-txt">' + (gold ? '<div class="pf-medal">' + medalSVG("mastered") + "</div>" : "") + '<h2 class="pf-title">' + (gold ? "Mastered" : "Perfect") + '</h2><p class="pf-sub">' + (gold ? "Elite. 90% and above." : "Every. Single. Question.") + '</p>' + (!gold && n ? '<div class="pf-score" id="pfScore">0 / ' + n + "</div>" : "") + "</div>";
+    f.innerHTML = h; document.body.appendChild(f);
+    if (!gold && n) { var t0 = performance.now(), el = $("pfScore"); (function tick(now) { var k = Math.min(1, (now - t0 - 900) / 1100); if (el && el.isConnected) { el.textContent = Math.round(Math.max(0, k) * (score || n)) + " / " + n; if (k < 1) requestAnimationFrame(tick); } })(t0); }
+    var r = $("result"); setTimeout(function () { r.classList.add("shake"); setTimeout(function () { r.classList.remove("shake"); }, 600); }, gold ? 380 : 420);
+    var gone = false; function rm() { if (gone) return; gone = true; f.remove(); }
+    f.addEventListener("click", rm); setTimeout(rm, total + 60);
+  }
+  var LEGEND_BUSY = false;
+  function legendFinale() {
+    if (LEGEND_BUSY) return; LEGEND_BUSY = true;
+    ["xferDlg", "badgesDlg"].forEach(function (id) { var e = $(id); if (e) e.hidden = true; });
+    var others = BADGES.filter(function (b) { return b.id !== "legend"; }), f = document.createElement("div"); f.id = "legendFx"; f.setAttribute("role", "dialog"); f.setAttribute("aria-label", "Hall of Legends unlocked");
+    var R = Math.min(window.innerWidth, window.innerHeight) * .34, h = '<div class="lg-rays"></div><div class="lg-orbit">';
+    others.forEach(function (b, i) { var a = i / others.length * 6.283; h += '<span class="lg-ic" style="' + badgeStyle(b.id) + '--x:' + Math.round(Math.cos(a) * R) + 'px;--y:' + Math.round(Math.sin(a) * R) + 'px;animation-delay:' + (.3 + i * .12).toFixed(2) + 's">' + badgeSvg(b.id) + "</span>"; });
+    h += '</div><div class="lg-wave"></div><div class="lg-wave w2"></div><div class="lg-wave w3"></div><div class="lg-core">' + badgeSvg("legend") + '</div><div class="lg-white"></div>' +
+      '<div class="lg-txt"><div class="lg-eye">Every badge earned</div><h2 class="lg-title">Hall of Legends</h2><p class="lg-sub">' + others.length + " of " + others.length + " badges. Nobody does it better.</p><button type=\"button\" class=\"btn lg-btn\" id=\"lgClose\">Continue</button></div>";
+    f.innerHTML = h; document.body.appendChild(f);
+    if (REDUCE) { f.className = "core"; } 
+    var GOLD = ["#ffe9a8", "#e4c06d", "#fff", "#7fe8ff", "#ff77a8", "#c4a1ff", "#3fd68c"], timers = [];
+    function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
+    var done = false;
+    function end() { if (done) return; done = true; timers.forEach(clearTimeout); f.classList.add("out"); setTimeout(function () { f.remove(); LEGEND_BUSY = false; renderBadges(); renderHub(); }, 720); }
+    at(300, SFX.badge);
+    for (var k = 0; k < 8; k++) at(500 + k * 420, SFX.pick);
+    at(4100, function () { f.classList.add("conv"); });
+    at(4500, function () { f.classList.add("core"); SFX.master(); });
+    at(4800, function () { confetti(GOLD, 280); }); at(5700, function () { confetti(GOLD, 220); SFX.badge(); }); at(6800, function () { confetti(GOLD, 220); });
+    at(8200, function () { confetti(GOLD, 180); }); at(9600, function () { confetti(GOLD, 160); });
+    at(4500 + 4300, function () { var b = $("lgClose"); if (b) b.focus(); });
+    f.addEventListener("click", function (e) { if (f.classList.contains("core") && (e.target.id === "lgClose" || timers.length && Date.now() - t0 > 9000)) end(); });
+    var t0 = Date.now(); f.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === "Enter") end(); });
+    document.addEventListener("keydown", function esc(e) { if (done) { document.removeEventListener("keydown", esc); return; } if (e.key === "Escape" && Date.now() - t0 > 4500) end(); });
   }
 
   // ---------- integrity guards ----------
@@ -3225,65 +3388,80 @@ select.chin { appearance: auto; }
   function xNote() { var n = $("xferNote"); if (n) n.textContent = XF.locked() ? "A transfer is waiting for confirmation." : ""; }
   var xferOpenSend = null;
   (function () {
-    var box = $("xferDlg"), panel = box.querySelector(".vcard"), last = null, msg = $("xMsg");
+    var box = $("xferDlg"), panel = box.querySelector(".vcard"), last = null, msg = $("xMsg"), mode = null, step = 0, bx = $("xBox"), acts = $("xActs");
     function say(t, bad) { msg.textContent = t || ""; msg.className = "fine" + (bad ? " bad" : ""); }
-    function tab(which) {
-      $("xtRecv").classList.toggle("on", which === "r"); $("xtSend").classList.toggle("on", which === "s");
-      $("xpRecv").hidden = which !== "r"; $("xpSend").hidden = which !== "s"; say("");
+    function btn(label, cls, fn) { var b = document.createElement("button"); b.type = "button"; b.className = cls ? "btn " + cls : "btn"; b.textContent = label; b.addEventListener("click", fn); acts.appendChild(b); return b; }
+    function link(label, fn) { var b = document.createElement("button"); b.type = "button"; b.className = "xlink"; b.textContent = label; b.addEventListener("click", fn); acts.appendChild(b); }
+    function copyBox(label) { bx.focus(); bx.select(); try { navigator.clipboard.writeText(bx.value).then(function () { say(label + " copied. Now switch to the other device and paste it."); }, function () { say("Press and hold the box, then choose Copy.", true); }); } catch (x) { say("Press and hold the box, then choose Copy.", true); } }
+    function pasteBox() { try { navigator.clipboard.readText().then(function (t) { bx.value = t; say(t ? "Pasted." : "Clipboard is empty.", !t); }, function () { say("Your browser blocked pasting. Press and hold the box, then choose Paste.", true); }); } catch (x) { say("Press and hold the box, then choose Paste.", true); } }
+    function screen(n, title, text, val, ro, ph) {
+      Array.prototype.forEach.call($("xDots").children, function (d, i) { d.className = i < n ? "on" : ""; });
+      $("xStepTitle").textContent = title; $("xStepText").textContent = text; bx.value = val || ""; bx.readOnly = !!ro; bx.placeholder = ph || ""; acts.textContent = "";
+      $("xHome").hidden = true; $("xFlow").hidden = false; $("xBack").hidden = false; $("xferTitle").textContent = mode === "r" ? "Get progress here" : "Send progress from here";
     }
-    function copy(id, label) {
-      var t = $(id); t.focus(); t.select();
-      try { navigator.clipboard.writeText(t.value).then(function () { say(label + " copied."); }, function () { say("Select the text and copy it."); }); } catch (x) { say("Select the text and copy it."); }
-    }
+    function home() { mode = null; $("xHome").hidden = false; $("xFlow").hidden = true; $("xBack").hidden = true; $("xferTitle").textContent = "Transfer progress"; say(""); }
+    function refresh() { renderBadges(); renderHub(); }
     function render() {
-      var rq = XF.request(), rc = XF.lastReceipt(), sp = XF.pending();
-      $("xReqBox").hidden = !rq; $("xCancelReq").hidden = !rq; $("xMake").textContent = rq ? "Make a new receive code" : "Make receive code";
-      if (rq) $("xReq").value = rq.code;
-      $("xRcptBox").hidden = !rc; if (rc) $("xRcpt").value = rc.code;
-      var waiting = !!sp; $("xSendNew").hidden = waiting; $("xSendWait").hidden = !waiting;
-      if (sp) {
-        $("xOut").value = sp.code;
-        $("xWaitMsg").textContent = sp.wiped ? "This device has been erased. The transfer code below still works once on the receiving device." : "This device is locked. Copy the transfer code to the new device, import it there, then paste the receipt below.";
-        $("xAbandon").hidden = !!sp.wiped; $("xConfirm").textContent = sp.wiped ? "Done, clear this screen" : "Confirm and erase this device";
+      say("");
+      if (mode === "r") {
+        var rq = XF.request(), rc = XF.lastReceipt();
+        if (step === 1 && rq) {
+          screen(1, "Step 1 of 3: copy your receive code", "Copy this code and paste it into the OLD device (send it to yourself in a message, for example). It works once, only on this device, for 30 minutes.", rq.code, true);
+          btn("Copy receive code", "", function () { copyBox("Receive code"); }); btn("Next: I have the transfer code", "ghost", function () { step = 2; render(); });
+          link("Make a new receive code", function () { if (window.confirm("Replace this receive code? The old one will stop working.")) XF.makeRequest().then(render, function (e) { say(e.message, true); }); });
+        } else if (step === 2 && rq) {
+          screen(2, "Step 2 of 3: paste the transfer code", "The old device gives you a transfer code (it starts with MQ1T). Paste it here and import.", "", false, "Paste transfer code here");
+          btn("Paste from clipboard", "ghost", pasteBox);
+          btn("Import progress", "", function () {
+            var had = !!loadP().badges.legend;
+            XF.importTransfer(bx.value).then(function () { step = 3; refresh(); render(); say("Imported. One more step: send the receipt back."); if (!had && loadP().badges.legend) setTimeout(legendFinale, 400); }, function (e) { say(e.message, true); });
+          });
+          link("Back to my receive code", function () { step = 1; render(); });
+        } else if (rc && !rq) {
+          screen(3, "Step 3 of 3: send the receipt back", "Progress imported. Copy this receipt and paste it into the OLD device so it can erase itself.", rc.code, true);
+          btn("Copy receipt", "", function () { copyBox("Receipt"); }); btn("Done", "ghost", function () { close(); });
+        } else { XF.makeRequest().then(function () { step = 1; render(); }, function (e) { screen(1, "Couldn't start", e.message, "", true); }); }
+      } else if (mode === "s") {
+        var sp = XF.pending();
+        if (!sp) {
+          screen(1, "Step 1 of 3: paste the receive code", "On the NEW device choose “Get progress on this device” and copy its receive code. Paste it here. This device will lock until the transfer is confirmed.", "", false, "Paste receive code here");
+          btn("Paste from clipboard", "ghost", pasteBox);
+          btn("Encrypt and lock this device", "", function () {
+            if (!window.confirm("Lock this device and encrypt your progress for the other device? You can't play here until the new device confirms. After that, this device is erased.")) return;
+            XF.send(bx.value).then(function () { step = 2; refresh(); render(); say("Locked. Copy the transfer code to the new device."); }, function (e) { say(e.message, true); });
+          });
+        } else if (sp.wiped) {
+          screen(3, "This device has been erased", "The transfer code below still works once on the new device. Keep it until the import is done.", sp.code, true);
+          btn("Copy transfer code", "", function () { copyBox("Transfer code"); }); btn("Done, clear this", "ghost", function () { XF.clearWiped(); refresh(); home(); });
+        } else if (step !== 3) {
+          screen(2, "Step 2 of 3: copy the transfer code", "Copy this code to the NEW device and press Import there. This device stays locked until you finish step 3.", sp.code, true);
+          btn("Copy transfer code", "", function () { copyBox("Transfer code"); }); btn("Next: I have the receipt", "ghost", function () { step = 3; render(); });
+        } else {
+          screen(3, "Step 3 of 3: paste the receipt", "After importing, the NEW device shows a receipt. Paste it here to confirm and erase this device.", "", false, "Paste receipt here");
+          btn("Paste from clipboard", "ghost", pasteBox);
+          btn("Confirm and erase this device", "", function () { XF.confirm(bx.value).then(function () { refresh(); step = 0; home(); say("Confirmed. This device has been erased."); }, function (e) { say(e.message, true); }); });
+          link("Erase without confirming", function () { if (window.confirm("Erase all progress on this device now? The transfer code will still work once on the new device, but if you lose it the progress is gone.")) { XF.abandon(); refresh(); render(); } });
+          link("Back to the transfer code", function () { step = 2; render(); });
+        }
       }
-      xNote();
     }
-    function open(which) {
-      render(); tab(which || (XF.pending() ? "s" : "r")); box.hidden = false; panel.scrollTop = 0; $("xferTitle").focus();
+    function enter(m) {
+      mode = m; step = 1;
+      if (m === "r") { var rc = XF.lastReceipt(); step = rc && !XF.request() ? 3 : XF.request() ? 1 : 1; }
+      if (m === "s") step = XF.pending() ? 2 : 1;
+      render();
     }
-    function close() { box.hidden = true; try { if (!XF.pending() || !XF.locked()) XF.clearWiped(); } catch (e) {} renderBadges(); renderHub(); if (last && document.body.contains(last)) last.focus(); }
+    function open(m) { box.hidden = false; panel.scrollTop = 0; if (m) enter(m); else if (XF.locked()) enter("s"); else home(); $("xferTitle").focus(); }
+    function close() { box.hidden = true; try { if (!XF.locked()) XF.clearWiped(); } catch (e) {} refresh(); if (last && document.body.contains(last)) last.focus(); }
     xferOpenSend = function () { last = null; open("s"); };
     $("xferOpen").addEventListener("click", function () { last = $("xferOpen"); $("badgesDlg").hidden = true; open(); });
-    $("xferClose").addEventListener("click", function () { close(); });
+    $("hubStats").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("#xferBtn"); if (b) { last = b; SFX.pick(); open(); } });
+    $("xGoRecv").addEventListener("click", function () { enter("r"); });
+    $("xGoSend").addEventListener("click", function () { enter("s"); });
+    $("xBack").addEventListener("click", function () { if (XF.locked() && mode === "s") { if (step === 3) { step = 2; render(); } else say("This device is locked until the transfer finishes. Close this to leave it for now.", true); return; } home(); });
+    $("xferClose").addEventListener("click", close);
     box.addEventListener("click", function (e) { if (e.target === box) close(); });
     document.addEventListener("keydown", function (e) { if (!box.hidden && e.key === "Escape") close(); });
-    $("xtRecv").addEventListener("click", function () { tab("r"); });
-    $("xtSend").addEventListener("click", function () { tab("s"); });
-    $("xMake").addEventListener("click", function () {
-      if (XF.request() && !window.confirm("Replace the current receive code? The old one will stop working.")) return;
-      XF.makeRequest().then(function () { render(); say("Receive code ready. Copy it to the old device."); }, function (e) { say(e.message, true); });
-    });
-    $("xCancelReq").addEventListener("click", function () { XF.cancelRequest(); render(); say("Receive code cancelled."); });
-    $("xCopyReq").addEventListener("click", function () { copy("xReq", "Receive code"); });
-    $("xCopyOut").addEventListener("click", function () { copy("xOut", "Transfer code"); });
-    $("xCopyRcpt").addEventListener("click", function () { copy("xRcpt", "Receipt"); });
-    $("xImport").addEventListener("click", function () {
-      if (!window.confirm("Import this progress? It merges into this device and keeps the higher scores.")) return;
-      XF.importTransfer($("xIn").value).then(function () { $("xIn").value = ""; render(); renderHub(); say("Imported. Now copy the receipt to the old device."); }, function (e) { say(e.message, true); });
-    });
-    $("xEnc").addEventListener("click", function () {
-      if (!window.confirm("Lock this device and encrypt its progress for the other device? You can't play here until the new device confirms. After that, this device is erased.")) return;
-      XF.send($("xRq").value).then(function () { $("xRq").value = ""; render(); say("Locked. Copy the transfer code to the new device."); }, function (e) { say(e.message, true); });
-    });
-    $("xConfirm").addEventListener("click", function () {
-      var sp = XF.pending();
-      if (sp && sp.wiped) { XF.clearWiped(); render(); tab("s"); say("Cleared."); renderBadges(); renderHub(); return; }
-      XF.confirm($("xRc").value).then(function () { $("xRc").value = ""; render(); renderBadges(); renderHub(); say("Confirmed. This device has been erased."); }, function (e) { say(e.message, true); });
-    });
-    $("xAbandon").addEventListener("click", function () {
-      if (!window.confirm("Erase all progress on this device now, without a receipt? The transfer code will still work once on the other device, but if you lose it, the progress is gone.")) return;
-      XF.abandon(); render(); renderBadges(); renderHub(); say("This device was erased.");
-    });
   })();
   (function () {
     var box = $("sourcesDlg"), panel = box.querySelector(".vcard"), title = $("sourcesTitle"), opener = null;
@@ -3500,7 +3678,7 @@ select.chin { appearance: auto; }
       c.fillStyle = "rgba(255,255,255,.5)"; c.font = "600 22px " + M; c.fillText(Math.round(R.score / R.n * 100) + "% CORRECT", W - 104, py + 270);
       // stats
       c.textAlign = "center";
-      var st = [[R.time, "TIME"], [badges + " / 20", "BADGES"], [R.n + "", "QUESTIONS"]];
+      var st = [[R.time, "TIME"], [badges + " / " + BADGES.length, "BADGES"], [R.n + "", "QUESTIONS"]];
       st.forEach(function (x, k) { var cx = 60 + 160 + k * 320; c.fillStyle = "#fff"; c.font = "800 50px " + F; c.fillText(x[0], cx, 1190); c.fillStyle = "rgba(255,255,255,.5)"; c.font = "600 21px " + M; c.fillText(x[1], cx, 1226); if (k) { c.strokeStyle = "rgba(255,255,255,.14)"; c.lineWidth = 2; c.beginPath(); c.moveTo(60 + k * 320, 1150); c.lineTo(60 + k * 320, 1230); c.stroke(); } });
       // footer
       c.fillStyle = "#e4c06d"; c.font = "700 26px " + M; c.fillText("THINK YOU CAN BEAT IT?", W / 2, 1292);
