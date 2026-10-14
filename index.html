@@ -1105,7 +1105,7 @@ select.chin { appearance: auto; }
 .xfer textarea { min-height: 96px; font-size: 13px; }
 
 /* ===== perfect (upgraded) + mastered ===== */
-#perfFx { background: radial-gradient(ellipse at 50% 50%, rgba(8,28,40,.92), rgba(1,5,9,.97) 75%); }
+#perfFx { background: radial-gradient(ellipse at 50% 50%, rgb(8,28,40), rgb(1,5,9) 80%); top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; }
 #perfFx .pf-title { background: linear-gradient(100deg, #fff 0%, #bff4ff 25%, #a58bff 45%, #ff9ad5 55%, #7fe8ff 70%, #fff 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 0 22px rgba(127,232,255,.9)) drop-shadow(0 0 70px rgba(127,232,255,.6)); animation: pfTitle 2.6s cubic-bezier(.12,.8,.2,1) .35s both, pfPrism 2.6s linear .35s both; }
 @keyframes pfPrism { from { background-position: 100% 0; } to { background-position: 0 0; } }
 #perfFx .pf-beam { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: linear-gradient(#0000, #fff 30%, #fff 70%, #0000); box-shadow: 0 0 40px 12px #7fe8ff; transform: scaleY(0); opacity: 0; animation: pfBeam 1.3s cubic-bezier(.2,.8,.2,1) .15s both; }
@@ -1116,7 +1116,7 @@ select.chin { appearance: auto; }
 #perfFx .pf-shard { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: linear-gradient(135deg, #fff, #7fe8ff 55%, #a58bff); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); opacity: 0; animation: pfShard 1.9s cubic-bezier(.1,.7,.3,1) both; }
 @keyframes pfShard { 0% { opacity: 0; transform: translate3d(0,0,0) rotate(0) scale(.2); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate3d(var(--dx),var(--dy),0) rotate(var(--r)) scale(var(--s)); } }
 #perfFx .pf-score { margin-top: 14px; font: 800 clamp(26px, 7vw, 54px) var(--mono); color: #fff; letter-spacing: .1em; filter: drop-shadow(0 0 18px #7fe8ff); opacity: 0; animation: pfSub .8s ease .8s both; }
-#perfFx.gold { background: radial-gradient(ellipse at 50% 50%, rgba(40,28,6,.92), rgba(8,5,1,.97) 75%); }
+#perfFx.gold { background: radial-gradient(ellipse at 50% 50%, rgb(40,28,6), rgb(8,5,1) 80%); }
 #perfFx.gold .pf-flash { background: radial-gradient(circle, #fff 0, #fff1bb 18%, rgba(228,192,109,.55) 40%, transparent 70%); }
 #perfFx.gold .pf-beam { box-shadow: 0 0 40px 12px #e4c06d; } #perfFx.gold .pf-streak { box-shadow: 0 0 30px 6px #e4c06d; }
 #perfFx.gold .pf-ring { border-color: #fff1bb; box-shadow: 0 0 40px #e4c06d, inset 0 0 30px #e4c06d; } #perfFx.gold .pf-ring.r2 { border-color: #c9972b; box-shadow: 0 0 40px #c9972b, inset 0 0 30px #c9972b; }
@@ -1132,6 +1132,17 @@ select.chin { appearance: auto; }
 #result[data-tier="mastered"] .rhero { animation: goldPulse 3.2s ease-in-out 2.4s infinite; }
 @keyframes goldPulse { 0%, 100% { box-shadow: 0 0 40px -14px #e4c06d; } 50% { box-shadow: 0 0 90px -10px #e4c06d, 0 0 0 1px rgba(228,192,109,.5); } }
 .rhero .stamp.mastered { animation: stampSlam .6s cubic-bezier(.2,1.5,.35,1) 1.8s both !important; }
+
+.meter { margin-top: 40px; margin-bottom: 44px; height: 14px; border-radius: 7px; }
+.meter > div { border-radius: 7px; }
+.meter > i, .meter > i.m2 { top: -8px; bottom: -8px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--ink); opacity: .85; z-index: 2; }
+.meter > i.m2 { background: #e4c06d; opacity: 1; }
+.meter > em, .meter > em.m2 { position: absolute; z-index: 3; transform: translateX(-50%); text-align: center; white-space: nowrap; font: 700 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--card, #151826); color: var(--ink); box-shadow: 0 2px 10px -4px rgba(0,0,0,.6); }
+.meter > em { top: -42px; }
+.meter > em.m2 { top: 24px; color: #f3d98e; border-color: rgba(228,192,109,.6); background: rgba(60,44,10,.85); }
+.meter > em.hit { border-color: var(--ok); color: var(--ok); }
+.meter > em.m2.hit { border-color: #f3d98e; box-shadow: 0 0 14px -2px #e4c06d; }
+@media (max-width: 560px) { .meter > em, .meter > em.m2 { font-size: 11px; padding: 5px 8px; } }
 </style>
 </head>
 <body>
@@ -1266,7 +1277,7 @@ select.chin { appearance: auto; }
       <div class="rchips" id="rChips"></div>
     </div>
     <div style="display:grid;gap:8px;padding-top:22px">
-      <div class="meter" aria-hidden="true"><div id="rMeter"></div><i></i><em>Pass 80%</em><i class="m2"></i><em class="m2">Mastered 90%</em></div>
+      <div class="meter" aria-hidden="true"><div id="rMeter"></div><i id="mkP"></i><em id="lbP">Pass 80%</em><i class="m2" id="mkM"></i><em class="m2" id="lbM">Mastered 90%</em></div>
       <div class="need" id="rNeed">Pass mark: 80% (24 of 30)</div>
     </div>
     <div class="rw">
@@ -3186,6 +3197,14 @@ select.chin { appearance: auto; }
     m.style.boxShadow = "0 0 18px -4px " + MC[2];
     requestAnimationFrame(function () { requestAnimationFrame(function () { m.style.transition = ""; m.style.width = (score / NQ * 100) + "%"; }); });
     var MST = Math.ceil(NQ * .9);
+    (function(){ var pp = PASS / NQ * 100, mp = MST / NQ * 100, lp = $("lbP"), lm = $("lbM");
+      $("mkP").style.left = pp + "%"; $("mkM").style.left = mp + "%";
+      lp.textContent = "Pass " + PASS + "/" + NQ; lm.textContent = "Mastered " + MST + "/" + NQ;
+      lp.style.left = pp + "%"; lm.style.left = mp + "%";
+      lp.classList.toggle("hit", score >= PASS); lm.classList.toggle("hit", score >= MST);
+      function fit(){ var w = m.parentNode.clientWidth || 300;
+        [[lp, pp], [lm, mp]].forEach(function (x) { var half = x[0].offsetWidth / 2, left = x[1] / 100 * w, off = Math.max(half + 2 - left, 0) + Math.min(w - left - half - 2, 0); x[0].style.transform = "translateX(calc(-50% + " + off + "px))"; }); }
+      fit(); requestAnimationFrame(fit); setTimeout(fit, 120); })();
     $("rNeed").textContent = tier === "perfect" ? "Flawless. Every single question correct."
       : tier === "mastered" ? "Mastered (90% mark: " + MST + " of " + NQ + "). " + (NQ - score) + " away from a perfect score."
       : pass ? "Pass mark: 80% (" + PASS + " of " + NQ + "). " + (MST - score) + " more correct for Mastered (90%)."
@@ -3311,7 +3330,7 @@ select.chin { appearance: auto; }
     tier = tier || "perfect"; var gold = tier === "mastered", total = gold ? 2700 : 3900;
     var old = $("perfFx"); if (old) old.remove();
     var f = document.createElement("div"); f.id = "perfFx"; f.className = gold ? "gold" : ""; f.setAttribute("aria-hidden", "true"); f.style.animationDuration = total + "ms";
-    var W = Math.min(window.innerWidth, 1000), h = '<div class="pf-flash"></div><div class="pf-beam"></div><div class="pf-streak"></div><div class="pf-ring"></div><div class="pf-ring r2"></div>' + (gold ? "" : '<div class="pf-ring r3"></div>') + '<div class="pf-bar t"></div><div class="pf-bar b"></div>';
+    var W = Math.min(window.innerWidth, 1000), h = '<div class="pf-flash"></div><div class="pf-beam"></div><div class="pf-streak"></div><div class="pf-ring"></div><div class="pf-ring r2"></div>' + (gold ? "" : '<div class="pf-ring r3"></div>') + '';
     var i, a, d;
     for (i = 0; i < (gold ? 34 : 54); i++) { a = Math.random() * 6.283; d = 120 + Math.random() * W * .55;
       h += '<i class="pf-st" style="left:50%;top:50%;--dx:' + Math.round(Math.cos(a) * d) + 'px;--dy:' + Math.round(Math.sin(a) * d) + 'px;animation-delay:' + (.35 + Math.random() * .9).toFixed(2) + 's"></i>'; }
