@@ -1217,6 +1217,19 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   .sx-row:active, .strow:active { background: rgba(255,255,255,.1); }
   .qz, .feat, .gaunt, .opt, .btn { will-change: auto; }
 }
+
+/* ===== live versus link ===== */
+.vspill { position: fixed; left: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 30; max-width: calc(100vw - 92px); padding: 8px 14px; border-radius: 999px; font: 600 12px var(--mono); letter-spacing: .02em; color: var(--ink); background: rgba(10,16,34,.88); border: 1px solid var(--line-hi); box-shadow: 0 8px 24px -10px rgba(0,0,0,.7); pointer-events: none; backdrop-filter: blur(6px); }
+.vspill::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: #7ca7ff; animation: vsDot 1.2s ease-in-out infinite; }
+.vspill.done::before { background: #46d37a; animation: none; } .vspill.done { border-color: rgba(70,211,122,.6); }
+@keyframes vsDot { 50% { opacity: .35; transform: scale(.8); } }
+.chpeer { margin: 0; min-height: 1.4em; font: 600 13px var(--mono); color: var(--gold); text-align: center; }
+.chlive { padding: 12px 14px; border-radius: 12px; font: 600 14px var(--body); background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+.chlive.play, .chlive.join, .chlive.wait { border-color: rgba(124,167,255,.5); } .chlive.done { border-color: rgba(70,211,122,.6); color: #8ff0b8; } .chlive.off { color: var(--muted); }
+.chlive.play::after, .chlive.wait::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 8px; border-radius: 50%; background: currentColor; animation: vsDot 1.2s ease-in-out infinite; vertical-align: middle; }
+.chmanual { border-radius: 12px; border: 1px solid var(--line); padding: 10px 14px; } .chmanual > summary { cursor: pointer; font: 600 13px var(--body); color: var(--muted); min-height: 32px; display: flex; align-items: center; } .chmanual[open] > summary { margin-bottom: 8px; }
+.chmanual > * + * { margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .vspill::before, .chlive::after { animation: none; } }
 </style>
 </head>
 <body>
@@ -1376,6 +1389,9 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     <div class="glass chres" id="chRes" hidden>
       <div class="eyebrow">Challenge result</div>
       <p class="fine" id="chResSub"></p>
+      <div class="chlive" id="chLive" role="status" aria-live="polite"></div>
+      <div class="chcmp" id="chCmp"></div>
+      <details class="chmanual" id="chManual"><summary>No live link? Use result codes instead</summary>
       <label class="chlab" for="chResCode">Send this result code to your friend</label>
       <input class="chin mono" id="chResCode" data-ok="1" readonly spellcheck="false">
       <div class="row"><button class="btn ghost" id="chResCopy" type="button">Copy result code</button><button class="btn ghost" id="chResShare" type="button">Share link</button></div>
@@ -1383,7 +1399,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       <input class="chin mono" id="chPaste" data-ok="1" autocomplete="off" spellcheck="false" placeholder="VS~IH-0-2-...">
       <div class="row"><button class="btn" id="chCompare" type="button">Compare</button></div>
       <p class="cherr" id="chCmpErr" role="alert"></p>
-      <div class="chcmp" id="chCmp"></div>
+      </details>
     </div>
     <div class="eps glass" id="rEps"></div>
     <div style="display:grid;gap:12px">
@@ -1483,6 +1499,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       <div class="chcd" id="chCd" role="timer" aria-live="off">1:00</div>
       <div class="chcode"><span class="fine">Challenge code</span><b id="chCode"></b></div>
       <p class="bmeta" id="chLobNote"></p>
+      <p class="chpeer" id="chLobPeer" role="status" aria-live="polite"></p>
       <div class="row"><button class="btn" id="chCopy" type="button">Copy code</button><button class="btn ghost" id="chShare" type="button">Share link</button><button class="btn ghost" id="chLeave" type="button">Leave</button></div>
     </div>
 
@@ -3147,6 +3164,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     S.busy = true;
     var s0 = S, pos = S.pos, pickIdx = S.pick, qi = S.order[pos], text = S.opts[pos][pickIdx];
     S.picks[pos] = text;
+    if (CH && CH.run) vsProgress(pos + 1);
     verify(pos, qi, text).then(function (ok) {
       if (S !== s0 || S.done || S.fin || S.pos !== pos) return;
       var btn = $("opts").children[pickIdx];
@@ -3858,7 +3876,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   }
   function chClose() {
     chBox.hidden = true; if (chTick) { clearInterval(chTick); chTick = null; }
-    if (CH && !CH.run && !CH.fin) { CH = null; }
+    if (CH && !CH.run && !CH.fin) { CH = null; vsClose(); }
     $("count").hidden = true;
     if (chLast && document.body.contains(chLast) && chLast.focus) chLast.focus();
   }
@@ -3937,6 +3955,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   function enterLobby(c, hosting) {
     if (chTick) clearInterval(chTick);
     CH = { code: c.code, q: c.q, film: c.film, level: c.level, seed: c.seed, start: c.start, run: false, fin: false, host: !!hosting };
+    vsConnect(c.code);
     openQuiz(c.q.id, true, true); applyFilm(c.film, true); setLevel(c.level, false);
     chPane("lobby");
     $("chLobPlan").textContent = planText(c.q, c.film, c.level);
@@ -3954,7 +3973,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       if (left <= 0 && !cs[0]) {
         cs[0] = 1; clearInterval(chTick); chTick = null;
         var cE = $("count"); cE.hidden = false; cE.innerHTML = '<b class="go">Go</b>'; SFX.go();
-        CH.run = true; start();
+        CH.run = true; vsSend({ t: "go" }); start();
         setTimeout(function () { cE.hidden = true; }, 600);
       }
     }, 100);
@@ -4011,6 +4030,79 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   $("chStart").addEventListener("click", function () { if (!DB) return; chOpen("create", true); });
   $("hubStats").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("#chBtn"); if (b) { chOpen("home"); chLast = b; } });
 
+
+  // ---------- live link: players see each other's progress and result automatically ----------
+  // Uses the free public ntfy.sh relay as a mailbox named after a hash of the challenge code. Needs internet on both devices.
+  var RELAY = window.MCU_RELAY || "https://ntfy.sh/";
+  var VS = { es: null, topic: null, id: Math.random().toString(36).slice(2, 10), opp: null, open: false, fail: false, last: 0, pend: null, pt: null, shown: false, hi: {} };
+  function vsTopic(code) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode("mcuqh|v1|" + code)).then(function (b) {
+      var a = new Uint8Array(b), h = ""; for (var i = 0; i < 12; i++) h += (a[i] + 256).toString(16).slice(1); return "mcuqh-" + h;
+    });
+  }
+  function vsClose() {
+    if (VS.es) { try { VS.es.close(); } catch (e) {} }
+    VS.es = null; VS.topic = null; VS.opp = null; VS.open = false; VS.fail = false; VS.shown = false; VS.hi = {}; VS.pend = null; clearTimeout(VS.pt);
+    var p = $("vsPill"); if (p) p.hidden = true;
+    var lp = $("chLobPeer"); if (lp) lp.textContent = "";
+  }
+  function vsSend(o) {
+    if (!VS.topic || !CH) return;
+    o.id = VS.id; o.n = myName();
+    try { fetch(RELAY + VS.topic, { method: "POST", body: JSON.stringify(o) }).catch(function () {}); } catch (e) {}
+  }
+  function vsConnect(code) {
+    vsClose();
+    if (!(window.crypto && crypto.subtle) || typeof EventSource !== "function" || !navigator.onLine) { VS.fail = true; return; }
+    vsTopic(code).then(function (t) {
+      if (!CH || CH.code !== code) return;
+      VS.topic = t;
+      var es; try { es = new EventSource(RELAY + t + "/sse?since=all"); } catch (e) { VS.fail = true; vsRender(); return; }
+      VS.es = es;
+      var failT = setTimeout(function () { if (!VS.open) { VS.fail = true; vsRender(); } }, 7000);
+      es.onopen = function () { VS.open = true; VS.fail = false; clearTimeout(failT); vsSend({ t: "hi" }); vsRender(); };
+      es.onerror = function () { if (!VS.open && es.readyState === 2) { VS.fail = true; vsRender(); } };
+      es.onmessage = function (ev) {
+        var m, d; try { m = JSON.parse(ev.data); d = JSON.parse(m.message); } catch (e) { return; }
+        if (!d || d.id === VS.id || !CH) return;
+        var o = VS.opp && VS.opp.id === d.id ? VS.opp : (VS.opp && VS.opp.id !== d.id && VS.opp.id ? null : (VS.opp = { id: d.id }));
+        if (!o) return;
+        o.n = String(d.n || "Friend").replace(/[^A-Za-z0-9 _.-]/g, "").slice(0, 14) || "Friend";
+        if (d.t === "hi") { if (!VS.hi[d.id]) { VS.hi[d.id] = 1; vsSend({ t: "hi" }); } }
+        else if (d.t === "go") { o.playing = true; }
+        else if (d.t === "pr") { o.playing = true; o.a = Math.max(0, parseInt(d.a, 10) || 0); o.nq = Math.max(1, parseInt(d.nq, 10) || 30); }
+        else if (d.t === "done") { var r = parseRes(d.rc); if (r && r.code === CH.code) { o.done = r; } }
+        vsRender();
+      };
+    });
+  }
+  function vsProgress(n) {
+    VS.pend = n; var now = Date.now();
+    if (now - VS.last > 2500 || n >= NQ) { VS.last = now; vsSend({ t: "pr", a: n, nq: NQ }); VS.pend = null; }
+    else if (!VS.pt) VS.pt = setTimeout(function () { VS.pt = null; if (VS.pend !== null) { VS.last = Date.now(); vsSend({ t: "pr", a: VS.pend, nq: NQ }); VS.pend = null; } }, 2600);
+  }
+  function vsStatus() {
+    var o = VS.opp, nm = o && o.n ? o.n : "Your friend";
+    if (VS.fail) return { k: "off", t: "Live link unavailable. Use result codes instead." };
+    if (!VS.open) return { k: "wait", t: "Connecting live link…" };
+    if (!o) return { k: "wait", t: "Waiting for your friend to join…" };
+    if (o.done) return { k: "done", t: nm + " finished." };
+    if (o.playing) return { k: "play", t: nm + "'s quiz is in progress" + (o.a ? " · " + o.a + "/" + (o.nq || NQ) + " answered" : "") };
+    return { k: "join", t: nm + " is connected." };
+  }
+  function vsRender() {
+    var pill = $("vsPill"); if (!pill) { pill = document.createElement("div"); pill.id = "vsPill"; pill.className = "vspill"; pill.hidden = true; pill.setAttribute("role", "status"); pill.setAttribute("aria-live", "polite"); document.body.appendChild(pill); }
+    var st = vsStatus(), lp = $("chLobPeer"), lv = $("chLive");
+    if (lp && CH && !CH.run && !CH.fin) lp.textContent = st.k === "off" ? "" : st.t;
+    if (pill) { var show = !!(CH && CH.run && st.k !== "off" && st.k !== "wait"); pill.hidden = !show; if (show) { pill.textContent = st.t; pill.className = "vspill " + st.k; } }
+    if (lv && CH && CH.fin) {
+      lv.textContent = st.t; lv.className = "chlive " + st.k;
+      var man = $("chManual"); if (man && st.k === "off") man.open = true;
+      var o = VS.opp;
+      if (o && o.done && CH.me && !VS.shown) { VS.shown = true; renderCmp($("chCmp"), CH.me, o.done); if (VS.es) { try { VS.es.close(); } catch (e) {} VS.es = null; } }
+    }
+  }
+
   // result codes: score + time travel back to the host as a short code or a link
   function resCode(me) {
     var body = ["VS", CH.code, me.n.replace(/~/g, ""), me.s, me.t, me.nq, me.dnf ? 1 : 0].join("~");
@@ -4057,6 +4149,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     var rc = resCode(me);
     box.hidden = false; $("chResCode").value = rc; $("chPaste").value = ""; $("chCmp").textContent = ""; $("chCmpErr").textContent = "";
     $("chResSub").textContent = planText(CH.q, CH.film, CH.level) + " · code " + CH.code;
+    vsSend({ t: "done", rc: rc }); vsRender();
   }
   $("chResCopy").addEventListener("click", function () { var b = this; copyText($("chResCode").value, function (ok) { b.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { b.textContent = "Copy result code"; }, 1800); }); });
   $("chResShare").addEventListener("click", function () {
