@@ -1230,6 +1230,14 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
 .chmanual { border-radius: 12px; border: 1px solid var(--line); padding: 10px 14px; } .chmanual > summary { cursor: pointer; font: 600 13px var(--body); color: var(--muted); min-height: 32px; display: flex; align-items: center; } .chmanual[open] > summary { margin-bottom: 8px; }
 .chmanual > * + * { margin-top: 10px; }
 @media (prefers-reduced-motion: reduce) { .vspill::before, .chlive::after { animation: none; } }
+
+.cside small.cv { color: #8ff0b8; font: 600 12px var(--mono); } .cside small.cv.bad { color: #ff8a8a; }
+.rvtabs { justify-self: start; flex-wrap: wrap; } .rvlist { display: grid; gap: 10px; margin-top: 10px; }
+.rvq { display: grid; gap: 6px; padding: 12px 14px; border-radius: 12px; background: rgba(0,0,0,.25); border: 1px solid var(--line); }
+.rvq b { font-size: 15px; line-height: 1.35; font-weight: 600; }
+.rvw, .rvr { font-size: 13px; padding: 6px 10px; border-radius: 8px; } .rvw::before, .rvr::before { font: 700 10px var(--mono); letter-spacing: .1em; margin-right: 8px; }
+.rvw { background: rgba(240,67,79,.12); color: #ff9aa4; } .rvw::before { content: "PICKED"; }
+.rvr { background: rgba(70,211,122,.12); color: #8ff0b8; } .rvr::before { content: "CORRECT"; }
 </style>
 </head>
 <body>
@@ -1391,15 +1399,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       <p class="fine" id="chResSub"></p>
       <div class="chlive" id="chLive" role="status" aria-live="polite"></div>
       <div class="chcmp" id="chCmp"></div>
-      <details class="chmanual" id="chManual"><summary>No live link? Use result codes instead</summary>
-      <label class="chlab" for="chResCode">Send this result code to your friend</label>
-      <input class="chin mono" id="chResCode" data-ok="1" readonly spellcheck="false">
-      <div class="row"><button class="btn ghost" id="chResCopy" type="button">Copy result code</button><button class="btn ghost" id="chResShare" type="button">Share link</button></div>
-      <label class="chlab" for="chPaste">Paste your friend's result code to compare</label>
-      <input class="chin mono" id="chPaste" data-ok="1" autocomplete="off" spellcheck="false" placeholder="VS~IH-0-2-...">
-      <div class="row"><button class="btn" id="chCompare" type="button">Compare</button></div>
-      <p class="cherr" id="chCmpErr" role="alert"></p>
-      </details>
+      <div id="chRev"></div>
     </div>
     <div class="eps glass" id="rEps"></div>
     <div style="display:grid;gap:12px">
@@ -1500,7 +1500,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       <div class="chcode"><span class="fine">Challenge code</span><b id="chCode"></b></div>
       <p class="bmeta" id="chLobNote"></p>
       <p class="chpeer" id="chLobPeer" role="status" aria-live="polite"></p>
-      <div class="row"><button class="btn" id="chCopy" type="button">Copy code</button><button class="btn ghost" id="chShare" type="button">Share link</button><button class="btn ghost" id="chLeave" type="button">Leave</button></div>
+      <div class="row"><button class="btn" id="chCopy" type="button">Copy code</button><button class="btn ghost" id="chShare" type="button">Share link</button><button class="btn ghost" id="chFs" type="button" hidden>Enter fullscreen</button><button class="btn ghost" id="chLeave" type="button">Leave</button></div>
     </div>
 
     <div id="chp-cmp" hidden>
@@ -3306,7 +3306,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     $("rTime").textContent = fmt(used);
     $("rCred").textContent = cred + " / " + S.nCred;
     $("rStrikes").textContent = S.strikes + " / " + MAX_STRIKES;
-    chFinish(score, used, why);
+    chFinish(score, used, why, missed);
     var pass = score >= PASS && why !== "strikes" && why !== "quit";
     var tier = pass ? tierOf(score, NQ, true) : "fail";
     LASTRES = { id: DB.id, name: DB.name, film: S.film ? DB.E[S.film - 1] : "", level: LEVELS[S.level], score: score, n: NQ, tier: tier, time: fmt(used), kind: DB.kind };
@@ -3346,6 +3346,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     if (why === "time") { var unanswered = NQ - answered; flag.hidden = false; flag.textContent = "Time ran out with " + unanswered + " question" + (unanswered === 1 ? "" : "s") + " unanswered. Unanswered questions score zero."; }
     else if (why === "strikes") { flag.hidden = false; flag.textContent = "Ended early for integrity violations. Automatic fail."; }
     else if (why === "quit") { flag.hidden = false; flag.textContent = "You gave up. Unanswered questions score zero and this counts as a fail."; }
+    else if (why === "forfeit") { flag.hidden = false; flag.textContent = "Your opponent left the match, so the quiz ended. Unanswered questions score zero."; }
     else flag.hidden = true;
     $("rEyebrow").textContent = "Debrief · " + (S.film ? DB.E[S.film - 1] + " · " : "") + LEVELS[S.level] + " · " + (why === "complete" ? "completed" : "ended early");
     var eps = $("rEps"); eps.textContent = "";
@@ -3876,7 +3877,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   }
   function chClose() {
     chBox.hidden = true; if (chTick) { clearInterval(chTick); chTick = null; }
-    if (CH && !CH.run && !CH.fin) { CH = null; vsClose(); }
+    if (CH && !CH.run && !CH.fin) { CH = null; vsClose(); if (FS && document.fullscreenElement && document.exitFullscreen) { FS = false; document.exitFullscreen().catch(function () {}); } }
     $("count").hidden = true;
     if (chLast && document.body.contains(chLast) && chLast.focus) chLast.focus();
   }
@@ -3952,6 +3953,13 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     try { navigator.clipboard.writeText(text).then(ok, bad); } catch (e) { bad(); }
   }
   function linkFor(kind, val) { var base = location.href.split("#")[0]; return base + "#" + kind + "=" + encodeURIComponent(val); }
+  function wantFs() {
+    var el = document.documentElement;
+    if (el.requestFullscreen && !document.fullscreenElement) el.requestFullscreen().then(function () { FS = true; }).catch(function () {});
+    else if (document.fullscreenElement) FS = true;
+  }
+  function fsApi() { return !!document.documentElement.requestFullscreen; }
+  $("chFs").addEventListener("click", function () { wantFs(); setTimeout(function () { $("chFs").hidden = !!document.fullscreenElement; }, 400); });
   function enterLobby(c, hosting) {
     if (chTick) clearInterval(chTick);
     CH = { code: c.code, q: c.q, film: c.film, level: c.level, seed: c.seed, start: c.start, run: false, fin: false, host: !!hosting };
@@ -3967,13 +3975,14 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       var left = CH.start * 1000 - Date.now();
       $("chCd").textContent = fmt(left);
       $("chCd").classList.toggle("soon", left <= 10000);
+      $("chFs").hidden = !fsApi() || !!document.fullscreenElement;
       if (left <= 3300 && !chBox.hidden) { chBox.hidden = true; }
       [3, 2, 1].forEach(function (n) { if (left <= n * 1000 && !cs[n]) { cs[n] = 1; var cEl = $("count"); cEl.hidden = false; cEl.innerHTML = "<b>" + n + "</b>"; SFX.count(); } });
       if (left <= 10000 && left > 3300) { var sec = Math.ceil(left / 1000); if (sec !== CH.lastSec) { CH.lastSec = sec; SFX.cd(); } }
       if (left <= 0 && !cs[0]) {
         cs[0] = 1; clearInterval(chTick); chTick = null;
         var cE = $("count"); cE.hidden = false; cE.innerHTML = '<b class="go">Go</b>'; SFX.go();
-        CH.run = true; vsSend({ t: "go" }); start();
+        FS = !!document.fullscreenElement; CH.run = true; vsSend({ t: "go" }); start();
         setTimeout(function () { cE.hidden = true; }, 600);
       }
     }, 100);
@@ -3985,7 +3994,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     var start = Math.floor(Date.now() / 1000) + chDelay;
     var code = mkCode(chQ, chF, chL, randSeed(), start);
     var c = parseCode(code); if (c.err || c.error) { $("chErr").textContent = c.err || c.error; return; }
-    SFX.join(); enterLobby(c, true);
+    SFX.join(); wantFs(); enterLobby(c, true);
   });
   var joining = false;
   function tryJoin(auto) {
@@ -3999,7 +4008,7 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     if (left <= 0) { $("chErr2").textContent = "That challenge already started " + fmt(-left) + " ago. Ask your friend for a new code."; SFX.wrong(); return; }
     if (left > 6 * 60 * 1000) { $("chErr2").textContent = "That code is for a start time too far away. Check that your device's clock is set automatically."; SFX.wrong(); return; }
     joining = true; setTimeout(function () { joining = false; }, 800);
-    SFX.join(); enterLobby(c, false);
+    SFX.join(); wantFs(); enterLobby(c, false);
   }
   $("chJoin").addEventListener("click", function () { tryJoin(false); });
   $("chInput").addEventListener("input", function () {
@@ -4042,14 +4051,26 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   }
   function vsClose() {
     if (VS.es) { try { VS.es.close(); } catch (e) {} }
-    VS.es = null; VS.topic = null; VS.opp = null; VS.open = false; VS.fail = false; VS.shown = false; VS.hi = {}; VS.pend = null; clearTimeout(VS.pt);
+    clearInterval(VS.hb); VS.hb = null; VS.es = null; VS.topic = null; VS.opp = null; VS.open = false; VS.fail = false; VS.shown = false; VS.hi = {}; VS.pend = null; clearTimeout(VS.pt);
     var p = $("vsPill"); if (p) p.hidden = true;
     var lp = $("chLobPeer"); if (lp) lp.textContent = "";
   }
   function vsSend(o) {
     if (!VS.topic || !CH) return;
-    o.id = VS.id; o.n = myName();
+    o.id = VS.id; o.n = myName(); o.r = CH.run ? 1 : 0; o.v = S && S.strikes || 0; o.a = S ? S.picks.filter(function (x) { return x !== undefined; }).length : 0; o.nq = NQ;
+    VS.sent = Date.now();
     try { fetch(RELAY + VS.topic, { method: "POST", body: JSON.stringify(o) }).catch(function () {}); } catch (e) {}
+  }
+  function cleanRes(m, n) {
+    if (!m || typeof m !== "object") return null;
+    var s = parseInt(m.s, 10), t = parseInt(m.t, 10), nq = parseInt(m.nq, 10), v = parseInt(m.v, 10) || 0;
+    if (!isFinite(s) || !isFinite(t) || !(nq > 0) || s < 0 || s > nq) return null;
+    return { n: n, s: s, t: Math.max(0, t), nq: nq, dnf: !!m.dnf, v: Math.max(0, Math.min(9, v)) };
+  }
+  function cleanMissed(w) {
+    var out = []; if (!Array.isArray(w)) return out;
+    w.slice(0, 40).forEach(function (x) { var qi = x && parseInt(x.qi, 10); if (isFinite(qi) && qi >= 0 && DB && DB.data[qi] && !DB.data[qi].dead) out.push({ qi: qi, p: x.p == null ? null : String(x.p).slice(0, 50) }); });
+    return out;
   }
   function vsConnect(code) {
     vsClose();
@@ -4060,21 +4081,58 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
       var es; try { es = new EventSource(RELAY + t + "/sse?since=all"); } catch (e) { VS.fail = true; vsRender(); return; }
       VS.es = es;
       var failT = setTimeout(function () { if (!VS.open) { VS.fail = true; vsRender(); } }, 7000);
-      es.onopen = function () { VS.open = true; VS.fail = false; clearTimeout(failT); vsSend({ t: "hi" }); vsRender(); };
+      es.onopen = function () { VS.open = true; VS.fail = false; VS.selfSeen = Date.now(); clearTimeout(failT); vsSend({ t: "hi" }); vsRender(); };
       es.onerror = function () { if (!VS.open && es.readyState === 2) { VS.fail = true; vsRender(); } };
       es.onmessage = function (ev) {
         var m, d; try { m = JSON.parse(ev.data); d = JSON.parse(m.message); } catch (e) { return; }
-        if (!d || d.id === VS.id || !CH) return;
-        var o = VS.opp && VS.opp.id === d.id ? VS.opp : (VS.opp && VS.opp.id !== d.id && VS.opp.id ? null : (VS.opp = { id: d.id }));
-        if (!o) return;
+        if (!d || !CH) return;
+        if (d.id === VS.id) { VS.selfSeen = Date.now(); return; }
+        var o = VS.opp;
+        if (o && o.id !== d.id) return;
+        if (!o) o = VS.opp = { id: d.id };
+        o.seen = Date.now();
         o.n = String(d.n || "Friend").replace(/[^A-Za-z0-9 _.-]/g, "").slice(0, 14) || "Friend";
+        o.v = Math.max(0, Math.min(9, parseInt(d.v, 10) || 0));
         if (d.t === "hi") { if (!VS.hi[d.id]) { VS.hi[d.id] = 1; vsSend({ t: "hi" }); } }
-        else if (d.t === "go") { o.playing = true; }
-        else if (d.t === "pr") { o.playing = true; o.a = Math.max(0, parseInt(d.a, 10) || 0); o.nq = Math.max(1, parseInt(d.nq, 10) || 30); }
-        else if (d.t === "done") { var r = parseRes(d.rc); if (r && r.code === CH.code) { o.done = r; } }
+        else if (d.t === "done") { var r = cleanRes(d.me, o.n); if (r) { o.done = r; o.w = cleanMissed(d.w); } }
+        else { if (d.r) { o.playing = true; o.a = Math.max(0, parseInt(d.a, 10) || 0); o.nq = Math.max(1, parseInt(d.nq, 10) || 30); } }
         vsRender();
       };
+      VS.hb = setInterval(function () { if (CH && (CH.run || !CH.fin) && Date.now() - (VS.sent || 0) > 9000) vsSend({ t: "hb" }); vsWatch(); }, 3000);
     });
+  }
+  // If the other player stops sending signs of life, they have left. They forfeit and your quiz ends.
+  function vsWatch() {
+    var o = VS.opp; if (!CH || !o || o.done || !VS.open) return;
+    var now = Date.now(); if (now - (VS.selfSeen || 0) > 20000) return;   // we are the ones who lost the connection
+    if (now - (o.seen || now) < 35000) return;
+    o.done = { n: o.n, s: 0, t: 0, nq: o.nq || NQ, dnf: true, left: true, v: o.v || 0 }; o.w = []; o.left = true;
+    if (CH.run && S && !S.done) finish("forfeit"); else vsRender();
+  }
+  function correctText(qi) {
+    var d = DB.data[qi];
+    return Promise.all(d.o.map(function (o) { return derive(d.vk || (DB.id + "|" + qi), o).then(function (h) { return h === d.v; }); })).then(function (r) { var j = r.indexOf(true); return j >= 0 ? d.o[j] : "unavailable"; });
+  }
+  function vsReview(o) {
+    var box = $("chRev"); box.textContent = ""; var mine = CH.missed || [], theirs = (o.w || []).filter(function (x) { return CH.order.indexOf(x.qi) >= 0; });
+    var sets = [[CH.me.n || "You", "You", mine], [o.n, o.n, theirs]], cur = 0;
+    var head = document.createElement("div"); head.className = "sx-chips rvtabs"; var list = document.createElement("div"); list.className = "rvlist";
+    box.appendChild(head); box.appendChild(list);
+    function draw() {
+      head.textContent = ""; list.textContent = "";
+      sets.forEach(function (st, i) { var b = document.createElement("button"); b.type = "button"; b.className = i === cur ? "on" : ""; b.textContent = (i === 0 ? "Your misses" : st[1] + "\u2019s misses") + " (" + st[2].length + ")"; b.addEventListener("click", function () { cur = i; SFX.pick(); draw(); }); head.appendChild(b); });
+      var items = sets[cur][2];
+      if (!items.length) { var e = document.createElement("p"); e.className = "fine"; e.textContent = "No missed questions. Flawless."; list.appendChild(e); return; }
+      items.forEach(function (x) {
+        var c = document.createElement("div"); c.className = "rvq";
+        var q = document.createElement("b"); q.textContent = DB.data[x.qi].q;
+        var w = document.createElement("div"); w.className = "rvw"; w.textContent = x.p == null ? "No answer" : x.p;
+        var r = document.createElement("div"); r.className = "rvr"; r.textContent = "…";
+        c.appendChild(q); c.appendChild(w); c.appendChild(r); list.appendChild(c);
+        correctText(x.qi).then(function (t) { r.textContent = t; });
+      });
+    }
+    draw();
   }
   function vsProgress(n) {
     VS.pend = n; var now = Date.now();
@@ -4083,38 +4141,26 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
   }
   function vsStatus() {
     var o = VS.opp, nm = o && o.n ? o.n : "Your friend";
-    if (VS.fail) return { k: "off", t: "Live link unavailable. Use result codes instead." };
+    if (VS.fail) return { k: "off", t: "Live link unavailable. Versus needs an internet connection on both devices." };
     if (!VS.open) return { k: "wait", t: "Connecting live link…" };
     if (!o) return { k: "wait", t: "Waiting for your friend to join…" };
+    if (o.left) return { k: "done", t: nm + " left the match." };
     if (o.done) return { k: "done", t: nm + " finished." };
-    if (o.playing) return { k: "play", t: nm + "'s quiz is in progress" + (o.a ? " · " + o.a + "/" + (o.nq || NQ) + " answered" : "") };
+    if (o.playing) return { k: "play", t: nm + "'s quiz is in progress" + (o.a ? " · " + o.a + "/" + (o.nq || NQ) + " answered" : "") + (o.v ? " · ⚠ " + o.v + " violation" + (o.v === 1 ? "" : "s") : "") };
     return { k: "join", t: nm + " is connected." };
   }
   function vsRender() {
     var pill = $("vsPill"); if (!pill) { pill = document.createElement("div"); pill.id = "vsPill"; pill.className = "vspill"; pill.hidden = true; pill.setAttribute("role", "status"); pill.setAttribute("aria-live", "polite"); document.body.appendChild(pill); }
     var st = vsStatus(), lp = $("chLobPeer"), lv = $("chLive");
-    if (lp && CH && !CH.run && !CH.fin) lp.textContent = st.k === "off" ? "" : st.t;
+    if (lp && CH && !CH.run && !CH.fin) lp.textContent = st.t;
     if (pill) { var show = !!(CH && CH.run && st.k !== "off" && st.k !== "wait"); pill.hidden = !show; if (show) { pill.textContent = st.t; pill.className = "vspill " + st.k; } }
     if (lv && CH && CH.fin) {
       lv.textContent = st.t; lv.className = "chlive " + st.k;
-      var man = $("chManual"); if (man && st.k === "off") man.open = true;
       var o = VS.opp;
-      if (o && o.done && CH.me && !VS.shown) { VS.shown = true; renderCmp($("chCmp"), CH.me, o.done); if (VS.es) { try { VS.es.close(); } catch (e) {} VS.es = null; } }
+      if (o && o.done && CH.me && !VS.shown) { VS.shown = true; renderCmp($("chCmp"), CH.me, o.done); vsReview(o); if (VS.es) { try { VS.es.close(); } catch (e) {} VS.es = null; } }
     }
   }
 
-  // result codes: score + time travel back to the host as a short code or a link
-  function resCode(me) {
-    var body = ["VS", CH.code, me.n.replace(/~/g, ""), me.s, me.t, me.nq, me.dnf ? 1 : 0].join("~");
-    return body + "~" + (hash32(body) % 1679616).toString(36);
-  }
-  function parseRes(raw) {
-    var s = String(raw || "").trim(), m = s.match(/[#&?]r=([^&\s]+)/i); if (m) { try { s = decodeURIComponent(m[1]); } catch (e) { return null; } }
-    var p = s.split("~"); if (p.length !== 8 || p[0] !== "VS") return null;
-    if ((hash32(p.slice(0, 7).join("~")) % 1679616).toString(36) !== p[7]) return null;
-    var o = { code: p[1].toUpperCase(), n: p[2].slice(0, 14) || "Player", s: parseInt(p[3], 10), t: parseInt(p[4], 10), nq: parseInt(p[5], 10), dnf: p[6] === "1" };
-    return isFinite(o.s) && isFinite(o.t) && o.nq > 0 ? o : null;
-  }
   function tm(sec) { return Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0"); }
   function judge(a, b) { // returns 1 if a wins, -1 if b wins, 0 tie
     if (a.dnf !== b.dnf) return a.dnf ? -1 : 1;
@@ -4127,63 +4173,39 @@ button, a, summary, label, select, input[type="button"], [role="button"], [data-
     var d = document.createElement("div"); d.className = "cside" + (win ? " win" : "");
     var n = document.createElement("span"); n.className = "cn"; n.textContent = o.n;
     var s = document.createElement("b"); s.textContent = o.dnf ? "DNF" : o.s + " / " + o.nq;
-    var t = document.createElement("small"); t.textContent = o.dnf ? "did not finish" : Math.round(o.s / o.nq * 100) + "% · " + tm(o.t);
-    d.appendChild(n); d.appendChild(s); d.appendChild(t); return d;
+    var t = document.createElement("small"); t.textContent = o.left ? "left the match" : o.dnf ? "did not finish" : Math.round(o.s / o.nq * 100) + "% · " + tm(o.t);
+    var v = document.createElement("small"); v.className = "cv" + (o.v ? " bad" : ""); v.textContent = o.v ? "⚠ " + o.v + (o.v === 1 ? " violation" : " violations") : "No violations";
+    d.appendChild(n); d.appendChild(s); d.appendChild(t); d.appendChild(v); return d;
   }
   function renderCmp(into, me, them) {
     into.textContent = "";
     var r = judge(me, them), head = document.createElement("div"); head.className = "cverdict " + (r > 0 ? "w" : r < 0 ? "l" : "t");
-    head.textContent = r > 0 ? "You win" : r < 0 ? them.n + " wins" : "It's a tie";
+    head.textContent = r > 0 ? (them.left ? "You win by forfeit" : "You win") : r < 0 ? them.n + " wins" : "It's a tie";
     var sub = document.createElement("small");
-    sub.textContent = r === 0 ? "Same score, same time." : (me.s === them.s && !me.dnf && !them.dnf ? "Same score, decided by time." : "");
+    sub.textContent = them.left ? them.n + " disconnected, so the match ended." : r === 0 ? "Same score, same time." : (me.s === them.s && !me.dnf && !them.dnf ? "Same score, decided by time." : "");
     var grid = document.createElement("div"); grid.className = "cgrid"; grid.appendChild(side(me, r > 0)); grid.appendChild(side(them, r < 0));
     into.appendChild(head); if (sub.textContent) into.appendChild(sub); into.appendChild(grid);
     if (r > 0) { setTimeout(confetti, 150); SFX.pass(); } else if (r < 0) SFX.fail(); else SFX.badge();
   }
-  function chFinish(score, used, why) {
+  function chFinish(score, used, why, missed) {
     var box = $("chRes");
     if (!(CH && CH.run)) { box.hidden = true; return; }
     CH.run = false; CH.fin = true;
-    var me = { n: myName(), s: score, t: Math.round(used / 1000), nq: NQ, dnf: why === "quit" || why === "strikes" };
-    CH.me = me; try { localStorage.setItem("chr-" + CH.code, JSON.stringify(me)); } catch (e) {}
-    var rc = resCode(me);
-    box.hidden = false; $("chResCode").value = rc; $("chPaste").value = ""; $("chCmp").textContent = ""; $("chCmpErr").textContent = "";
+    var me = { n: myName(), s: score, t: Math.round(used / 1000), nq: NQ, dnf: why === "quit" || why === "strikes", v: S ? S.strikes : 0 };
+    CH.me = me; CH.missed = (missed || []).map(function (x) { return { qi: x.qi, p: x.picked === undefined ? null : String(x.picked).slice(0, 50) }; });
+    CH.order = S ? S.order.slice() : [];
+    box.hidden = false; $("chCmp").textContent = ""; $("chRev").textContent = "";
     $("chResSub").textContent = planText(CH.q, CH.film, CH.level) + " · code " + CH.code;
-    vsSend({ t: "done", rc: rc }); vsRender();
-  }
-  $("chResCopy").addEventListener("click", function () { var b = this; copyText($("chResCode").value, function (ok) { b.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { b.textContent = "Copy result code"; }, 1800); }); });
-  $("chResShare").addEventListener("click", function () {
-    var b = this, rc = $("chResCode").value, me = CH && CH.me, url = linkFor("r", rc), msg = (me ? "I got " + (me.dnf ? "a DNF" : me.s + "/" + me.nq + " in " + tm(me.t)) + " on the MCU Quiz Hub challenge. Beat it!\n" : "") + "Result code: " + rc + "\n" + url;
-    if (navigator.share) { navigator.share({ text: msg }).catch(function () {}); return; }
-    copyText(msg, function (ok) { b.textContent = ok ? "Link copied" : "Copy failed"; setTimeout(function () { b.textContent = "Share link"; }, 1800); });
-  });
-  $("chCompare").addEventListener("click", function () {
-    var them = parseRes($("chPaste").value);
-    if (!them) { $("chCmpErr").textContent = "That result code isn't valid."; SFX.wrong(); return; }
-    if (!CH || !CH.me || them.code !== CH.code) { $("chCmpErr").textContent = "That result is from a different challenge."; SFX.wrong(); return; }
-    $("chCmpErr").textContent = ""; renderCmp($("chCmp"), CH.me, them);
-  });
-  $("chPaste").addEventListener("keydown", function (e) { if (e.key === "Enter") $("chCompare").click(); });
-  function openResultLink(raw) {
-    var them = parseRes(raw); chLast = null; chBox.hidden = false; chPane("cmp");
-    var out = $("chCmpOut"); out.textContent = "";
-    if (!them) { out.textContent = "That result link isn't valid."; return; }
-    var mine = null; try { mine = JSON.parse(localStorage.getItem("chr-" + them.code) || "null"); } catch (e) {}
-    if (mine) { renderCmp(out, mine, them); return; }
-    out.appendChild(side(them, false));
-    var note = document.createElement("p"); note.className = "fine"; note.style.marginTop = "12px";
-    note.textContent = "You haven't played challenge " + them.code + " on this device, so there's nothing to compare yet. Ask for a new code and race again.";
-    out.appendChild(note);
+    vsSend({ t: "done", me: me, w: CH.missed.slice(0, 40)}); vsRender();
   }
   function handleDeep() {
-    var h = (location.hash || "").replace(/^#\/?/, ""), m = h.match(/^(c|r)=(.+)$/i);
+    var h = (location.hash || "").replace(/^#\/?/, ""), m = h.match(/^(c)=(.+)$/i);
     if (!m) return false;
     var kind = m[1].toLowerCase(), val = m[2];
     try { history.replaceState(null, "", location.href.split("#")[0] + "#home"); } catch (e) {}
     CUR = "home";
     goHub(true, "home");
     if (kind === "c") { chOpen("join"); var dv0 = val; try { dv0 = decodeURIComponent(val); } catch (e) {} $("chInput").value = dv0; $("chInput").dispatchEvent(new Event("input")); }
-    else { var dv = val; try { dv = decodeURIComponent(val); } catch (e) {} openResultLink(dv); }
     return true;
   }
 
